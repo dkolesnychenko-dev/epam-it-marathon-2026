@@ -490,5 +490,5 @@ export/
 
 # Backend local deployment artifacts/config
 syndicate_venv/
-#.syndicate-config-restaurant-backend-app/syndicate.yml
-#.syndicate-config-restaurant-backend-app/syndicate_aliases.yml
+.syndicate-config-restaurant-backend-app/syndicate.yml
+.syndicate-config-restaurant-backend-app/syndicate_aliases.yml

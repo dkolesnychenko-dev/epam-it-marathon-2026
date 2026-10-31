@@ -18,8 +18,8 @@ node_modules/
 .env.*
 
 # Terraform
-#infra/terraform/backend.tf
-#infra/terraform/variables.tf
+infra/terraform/backend.tf
+infra/terraform/variables.tf
 **/.terraform/
 *.tfstate
 *.tfstate.*
