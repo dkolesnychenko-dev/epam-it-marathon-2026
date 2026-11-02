@@ -1,16 +1,18 @@
-# Домашнє завдання
+# Homework: Backend — Group Pre-Order Management API 🚀
 
-## 1й рівень складності
+## Task Overview
 
-Реалізувати API для отримання списку сесій учасників групового pre-order для Owner
+The goal is to implement a set of API endpoints to manage group pre-orders. This includes allowing the group owner to view all participants' sessions, manage their own session, submit a consolidated order, and remove guest sessions from the group.
 
-**GET /guest/groups/{groupReservationId}/sessions**
+## Requirements
 
-**Опис:**  
-Owner має бачити, які учасники приєдналися до групового замовлення, які страви вони додали, загальну суму по кожному учаснику та загальну суму по всіх учасниках.
+### Level 1: Guest Sessions List
+**GET `/guest/groups/{groupReservationId}/sessions`**
 
-**Response:**
+**Description:**
+The Owner should be able to see which participants have joined the group order, what dishes they have added, the total amount for each participant, and the total amount for all participants.
 
+**Response Example:**
 ```json
 {
   "participants": [
@@ -55,49 +57,40 @@ Owner має бачити, які учасники приєдналися до �
 
 ---
 
-## 2й рівень складності
+### Level 2: Owner Session & Consolidated Submit
 
-Реалізувати функціонал для Owner, який дозволяє:
-- отримати `guestSessionId` власної owner session для конкретного reservation;
-- підтвердити консолідований груповий pre-order.
+#### 1. Get Owner Session ID
+**GET `/reservations/{reservationId}/guest-session-id`**
 
-### 1. Отримати owner session id
-
-**GET /reservations/{reservationId}/guest-session-id**
-
-**Response:**
-
+**Response Example:**
 ```json
 {
   "guestSessionId": "owner-session-123"
 }
 ```
 
-### 2. Підтвердити консолідований pre-order
+#### 2. Submit Consolidated Pre-order
+**POST `/group-reservations/{groupReservationId}/submit`**
 
-**POST /group-reservations/{groupReservationId}/submit**
-
-**Request:**
-
+**Request Example:**
 ```json
 {
   "reservationId": "reservation-123"
 }
 ```
 
-**Опис:**  
-Після перегляду замовлень усіх учасників Owner має підтвердити консолідований pre-order, який буде переданий ресторану для подальшої обробки.
+**Description:**
+After reviewing all participants' orders, the Owner must confirm the consolidated pre-order to be sent to the restaurant.
 
-Під час submit потрібно:
-- взяти лише `submitted` guest sessions;
-- зібрати всі страви в один список;
-- об’єднати однакові страви по `dishId`;
-- додати їх в order;
-- змінити статус order на `SubmittedByCustomer`;
-- змінити статус group reservation на `Submitted`.
+**Submission logic:**
+- Take only `submitted` guest sessions.
+- Aggregate all dishes into a single list.
+- Merge identical dishes by `dishId` (sum quantities).
+- Add items to the order.
+- Change order status to `SubmittedByCustomer`.
+- Change group reservation status to `Submitted`.
 
-**Response:**
-
+**Response Example:**
 ```json
 [
   {
@@ -111,28 +104,22 @@ Owner має бачити, які учасники приєдналися до �
 ]
 ```
 
-**Умови:**
-- тільки Owner може викликати обидва endpoint-и;
-- якщо reservation або group reservation не знайдено — повернути 404;
-- якщо немає жодної `submitted` session — повернути 400;
-- якщо в submitted sessions немає жодної страви — повернути 400;
-- якщо order не знайдено — повернути 400.
+**Conditions:**
+- Only the Owner can call these endpoints.
+- Return 404 if the reservation or group reservation is not found.
+- Return 400 if there are no `submitted` sessions.
+- Return 400 if submitted sessions contain no dishes.
+- Return 400 if the order is not found.
 
 ---
 
-## 3й рівень складності
+### Level 3: Guest Session Removal
+**DELETE `/guest/groups/{groupReservationId}/sessions/{guestSessionId}`**
 
-Розширити функціонал керування груповим pre-order для Owner:
-- реалізувати видалення guest session із групи;
-- після видалення повертати оновлений список учасників і нову загальну суму.
+**Description:**
+The Owner can remove a specific participant's session from the group order.
 
-**DELETE /guest/groups/{groupReservationId}/sessions/{guestSessionId}**
-
-**Опис:**  
-Owner може видалити сесію конкретного учасника з групового замовлення.
-
-**Response:**
-
+**Response Example:**
 ```json
 {
   "participants": [
@@ -158,8 +145,8 @@ Owner може видалити сесію конкретного учасник
 }
 ```
 
-**Умови:**
-- тільки Owner може видаляти guest session;
-- якщо guest session не належить цій group reservation — повернути 400;
-- якщо guest session не знайдена — повернути 404;
-- після видалення потрібно повернути оновлений snapshot групи.
+**Conditions:**
+- Only the Owner can delete a guest session.
+- Return 400 if the guest session does not belong to this group reservation.
+- Return 404 if the guest session is not found.
+- Return the updated group snapshot after deletion.
