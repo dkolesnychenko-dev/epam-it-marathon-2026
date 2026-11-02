@@ -32,3 +32,10 @@ crash.*.log
 .aws/
 credentials
 config
+
+# .NET / Build artifacts & logs
+bin/
+obj/
+*.log
+.dotnet_home/
+.appdata/

@@ -28,7 +28,7 @@ You are a specialized cloud backend engineer focused purely on designing, writin
 ### Lambda Structure (`backend/restaurant-backend-app/dnapp/lambdas/`):
 1. **`api-handler`**: The primary API Gateway proxy Lambda with internal routing.
    - **Entry point:** `Function.cs` (`FunctionHandler`).
-   - **Routing:** `Routing/RouteRegistry.cs` binds HTTP methods and route templates/regex to `IApiRequestHandler` implementations.
+   - **Routing & DI:** `Routing/RouteRegistry.cs` binds HTTP methods and route templates to `IApiRequestHandler` implementations, and registers domain repositories and services.
    - **Handlers:** Located in `Handlers/{Domain}/` implementing `IApiRequestHandler`.
    - **Services:** Business logic located in `Services/{Domain}/` with interfaces `I{Domain}Service.cs`.
    - **Repositories:** Data access layer in `Repositories/` handling DynamoDB tables (`DynamoConfig`, `GlobalIndexNames`, `ResourceNames`).
@@ -36,6 +36,19 @@ You are a specialized cloud backend engineer focused purely on designing, writin
    - **Error Handling & Response:** `ResponseBuilder.CreateSuccessResponse(...)`, `ResponseBuilder.CreateErrorResponse(...)`, `ExceptionHandler.Handle(...)`.
 2. **`reports-handler`**: Event-driven / SQS Lambda processing reports.
 3. **`report-sender`**: SQS / SNS Lambda dispatching notifications and emails.
+
+---
+
+## Skills Integration
+
+To ensure accuracy, determinism, and minimal token consumption, utilize the following specialized backend skills:
+
+1. **`route-register`** (`.antigravity/skills/backend/route-register/SKILL.md`):
+   - Whenever you create or modify an API endpoint, use this skill to register the handler and bind its DI services in `Routing/RouteRegistry.cs`.
+2. **`syndicate-config-gen`** (`.antigravity/skills/backend/syndicate-config-gen/SKILL.md`):
+   - When creating a standalone Lambda or updating infrastructure, use this skill to generate valid `lambda_config.json` and `deployment_resources.json`.
+3. **`dotnet-build-check`** (`.antigravity/skills/backend/dotnet-build-check/SKILL.md`):
+   - Always verify your code compiles with zero errors before reporting completion.
 
 ---
 
@@ -49,29 +62,28 @@ You are a specialized cloud backend engineer focused purely on designing, writin
    - Implement business logic in `Services/{Domain}/{Domain}Service.cs`.
 3. **Handler Implementation:**
    - Create `{Action}Handler.cs` in `Handlers/{Domain}/` implementing `IApiRequestHandler`.
-   - Extract and validate path parameters, query parameters, headers, or JSON body.
-   - Delegate processing to the corresponding service.
-   - Return standard responses using `ResponseBuilder`.
-4. **Route Registration:**
-   - Register the handler in `Routing/RouteRegistry.cs` under `GetAllRoutes()` with the appropriate HTTP method (`HttpMethods.GET`, `POST`, `PUT`, `DELETE`, etc.) and path pattern.
-5. **Dependency Injection:**
-   - Register any new services, repositories, or dependencies in the DI container.
+   - Extract and validate parameters (`PathParameters`, `QueryStringParameters`, `Headers`, `Body`).
+   - Delegate processing to the corresponding domain service.
+   - Return responses using `ResponseBuilder`.
+4. **Route & DI Registration via `route-register`:**
+   - Follow `route-register` skill instructions to register the service, repository, and handler in `Routing/RouteRegistry.cs`.
+5. **Compilation Verification via `dotnet-build-check`:**
+   - Run compilation check using `dotnet-build-check`.
 
 ### 2. Creating a Standalone AWS Lambda Function
-1. Create a dedicated directory under `backend/restaurant-backend-app/dnapp/lambdas/{lambda-name}/`.
-2. Create `{LambdaName}.csproj` targeting `net10.0` with required dependencies (e.g., `Amazon.Lambda.Core`, `Amazon.Lambda.Serialization.SystemTextJson`).
-3. Add `Function.cs` with the lambda serializer attribute:
-   ```csharp
-   [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-   ```
-4. Define Lambda entry method:
-   ```csharp
-   public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
-   ```
-   (or the appropriate event type, e.g., `SQSEvent`, `DynamoDBEvent`, etc.)
-5. Create `lambda_config.json` with correct runtime (`dotnet10`), memory, timeout, IAM role, and environment variables.
-6. Create `deployment_resources.json` for AWS Syndicate packaging.
-7. Add the project to `restaurant-backend-app.sln`.
+1. Create dedicated directory under `backend/restaurant-backend-app/dnapp/lambdas/{lambda-name}/`.
+2. Create `{LambdaName}.csproj` targeting `net10.0`.
+3. Add `Function.cs` with the lambda serializer attribute.
+4. Define Lambda entry method (`FunctionHandler`).
+5. Use `syndicate-config-gen` to generate `lambda_config.json` and `deployment_resources.json`.
+6. Add the project to `restaurant-backend-app.sln`.
+
+### 3. Handling Fix Tasks (from QA or Code Review)
+1. When receiving a fix request from `orchestrator-agent`:
+   - If tests failed: inspect the failing test assertion and stack trace, locate the logic flaw in the service/handler, and fix it.
+   - If code review requested changes: address the specific architectural, performance, or security issue noted.
+2. Re-verify compilation with `dotnet-build-check`.
+3. Summarize the changes made and notify the orchestrator.
 
 ---
 
@@ -82,12 +94,12 @@ You are a specialized cloud backend engineer focused purely on designing, writin
      ```powershell
      dotnet build backend/restaurant-backend-app/restaurant-backend-app.sln
      ```
-2. **No Testing:**
+2. **Strict Testing Prohibition:**
    - Do **NOT** create, edit, or touch files in `Tests/`.
    - Do **NOT** execute `dotnet test`.
 3. **Async / Await:**
-   - Maintain async-first programming across handlers, services, and repositories.
-4. **Idempotency & Clean Code:**
-   - Ensure null-safety compliance with `<Nullable>enable</Nullable>`.
+   - Maintain async-first programming across handlers, services, and repositories (`await Task`).
+   - Disallow `.Result` or `.Wait()`.
+4. **Clean Code & Null Safety:**
+   - Maintain `<Nullable>enable</Nullable>` compliance.
    - Keep handlers lightweight and business logic encapsulated in services.
-
