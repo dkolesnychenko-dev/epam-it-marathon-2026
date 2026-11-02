@@ -1,0 +1,220 @@
+[
+  {
+    "reservationId": "res101-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "userId": "user-seed-01",
+    "rating": 5,
+    "comment": "Outstanding hospitality and relaxing terrace view! The avocado pine nut bowl was exceptionally fresh and well seasoned.",
+    "createdAt": "2026-09-02T14:30:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res102-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "userId": "user-seed-02",
+    "rating": 5,
+    "comment": "Delicious food and friendly staff. The tiramisu was one of the best I have ever tasted in Tbilisi.",
+    "createdAt": "2026-09-14T19:45:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res103-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "userId": "user-seed-03",
+    "rating": 5,
+    "comment": "The wild mushroom risotto was creamy and full of flavor. Our waiter was very attentive throughout the entire dinner.",
+    "createdAt": "2026-09-28T20:10:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res104-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "userId": "user-seed-04",
+    "rating": 4,
+    "comment": "Lovely ambiance on Abashidze street. Had to wait about 10 minutes for our table, but the food made up for it completely.",
+    "createdAt": "2026-10-05T18:20:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res105-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "userId": "user-seed-05",
+    "rating": 5,
+    "comment": "Truffle burrata with heirloom tomatoes is a must try! Perfect glass of white wine to accompany.",
+    "createdAt": "2026-10-12T13:15:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res106-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "userId": "user-seed-06",
+    "rating": 5,
+    "comment": "Brought colleagues here for lunch. Prompt service, immaculate presentation, and quiet outdoor terrace.",
+    "createdAt": "2026-10-19T12:40:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res107-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "userId": "user-seed-07",
+    "rating": 4,
+    "comment": "The pan-roasted duck breast was tender and the cherry glaze complemented it wonderfully. Highly recommended.",
+    "createdAt": "2026-10-25T19:30:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res108-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "userId": "user-seed-08",
+    "rating": 5,
+    "comment": "Our favorite dining spot in Vake. Impeccable cleanliness, great staff, and sensational desserts.",
+    "createdAt": "2026-11-01T21:00:00Z",
+    "type": 0
+  },
+
+  {
+    "reservationId": "res201-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "userId": "user-seed-09",
+    "rating": 5,
+    "comment": "Great atmosphere near the old fortress wall. The ribeye steak was cooked to absolute perfection.",
+    "createdAt": "2026-09-10T18:00:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res202-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "userId": "user-seed-10",
+    "rating": 4,
+    "comment": "Very cozy interior with exposed brickwork. Fast service and tasty crispy calamari fritti.",
+    "createdAt": "2026-09-22T20:15:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res203-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "userId": "user-seed-11",
+    "rating": 5,
+    "comment": "The seafood paella took us straight back to Valencia. Fresh prawns and clams, wonderful socarrat.",
+    "createdAt": "2026-10-02T19:00:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res204-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "userId": "user-seed-12",
+    "rating": 5,
+    "comment": "Outstanding recommendation on local wines by our sommelier. Excellent service from start to finish.",
+    "createdAt": "2026-10-09T21:10:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res205-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "userId": "user-seed-13",
+    "rating": 4,
+    "comment": "Garlic butter shrimp scampi was rich and well spiced. Portions are generous and filling.",
+    "createdAt": "2026-10-16T17:45:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res206-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "userId": "user-seed-14",
+    "rating": 5,
+    "comment": "Celebrated an anniversary here in the Old Town. Romantic lighting and welcoming staff.",
+    "createdAt": "2026-10-23T20:30:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res207-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "userId": "user-seed-15",
+    "rating": 5,
+    "comment": "Pistachio baklava is heavenly. Crisp, not overly sweet, with premium Antep pistachios.",
+    "createdAt": "2026-10-28T16:00:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res208-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "userId": "user-seed-16",
+    "rating": 4,
+    "comment": "Attentive waiters and quick table clearing. Clean amenities and great acoustic atmosphere.",
+    "createdAt": "2026-11-01T14:15:00Z",
+    "type": 0
+  },
+
+  {
+    "reservationId": "res301-3333-3333-3333-333333333333",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "userId": "user-seed-17",
+    "rating": 5,
+    "comment": "Prime location on Rustaveli Avenue. Perfect place for business dinners and gatherings.",
+    "createdAt": "2026-09-08T13:00:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res302-3333-3333-3333-333333333333",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "userId": "user-seed-18",
+    "rating": 5,
+    "comment": "Salmon was incredible and chocolate lava cake was heaven. Will definitely return!",
+    "createdAt": "2026-09-18T21:00:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res303-3333-3333-3333-333333333333",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "userId": "user-seed-19",
+    "rating": 5,
+    "comment": "Tagliatelle with black truffle was sublime. Handmade pasta with the perfect al dente bite.",
+    "createdAt": "2026-09-29T19:30:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res304-3333-3333-3333-333333333333",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "userId": "user-seed-20",
+    "rating": 5,
+    "comment": "Top tier customer service. The host greeted us by name and took our coats immediately.",
+    "createdAt": "2026-10-06T18:15:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res305-3333-3333-3333-333333333333",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "userId": "user-seed-21",
+    "rating": 4,
+    "comment": "Herb-crusted rack of lamb was juicy and flavorful. A slightly longer wait for mains, but worth it.",
+    "createdAt": "2026-10-14T20:45:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res306-3333-3333-3333-333333333333",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "userId": "user-seed-22",
+    "rating": 5,
+    "comment": "Professional team and elegant dining room. Perfect spot to host international clients.",
+    "createdAt": "2026-10-21T13:40:00Z",
+    "type": 0
+  },
+  {
+    "reservationId": "res307-3333-3333-3333-333333333333",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "userId": "user-seed-23",
+    "rating": 5,
+    "comment": "Glazed Meyer lemon tart was the highlight of our evening. Vibrant, tart, and balanced meringue.",
+    "createdAt": "2026-10-27T21:15:00Z",
+    "type": 1
+  },
+  {
+    "reservationId": "res308-3333-3333-3333-333333333333",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "userId": "user-seed-24",
+    "rating": 5,
+    "comment": "Flawless hospitality. Staff went above and beyond to accommodate dietary preferences.",
+    "createdAt": "2026-11-02T12:00:00Z",
+    "type": 0
+  }
+]
