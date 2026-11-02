@@ -330,7 +330,7 @@ Antigravity executes terminal commands (`run_command`) in an isolated sandbox en
   - Navigate to **Settings -> General -> Global Permissions -> Tool Permissions**.
   - In the **Terminal** section, add the command prefix/pattern:
     ```text
-    dotnet*
+    dotnet test
     ```
   - **Security Guarantee:** Antigravity auto-approves safe compilation and test runs (`dotnet build`, `dotnet test`). Destructive operations (`Remove-Item`, git branch resets, shell scripts) continue to require explicit user confirmation.
   - Alternatively, select **«Always Allow»** directly from the confirmation modal when prompted in the chat interface.
