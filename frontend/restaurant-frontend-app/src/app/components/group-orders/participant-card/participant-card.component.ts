@@ -11,8 +11,12 @@ import { Participant } from '@app/models/group-orders/participant.model';
 })
 export class ParticipantCardComponent {
   readonly participant = input.required<Participant>();
+  readonly isMe = input<boolean>(false);
 
   readonly title = computed(() => {
+    if (this.isMe()) {
+      return 'My Pre-Order';
+    }
     const person = this.participant();
     return person.type === 'Owner' ? `Owner: ${person.name}` : `Guest: ${person.name}`;
   });
