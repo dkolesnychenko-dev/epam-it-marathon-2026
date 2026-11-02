@@ -35,18 +35,18 @@ function Write-Batch {
         return
     }
 
-    Write-Host "`n📦 Seeding $Name from $FileName..." -ForegroundColor Yellow
+    Write-Host "`n[+] Seeding $Name from $FileName..." -ForegroundColor Yellow
     $fileUri = "file://$filePath"
     
     try {
         $result = aws dynamodb batch-write-item --request-items $fileUri --region $Region | Out-String
-        Write-Host "  ✓ Success: $Name" -ForegroundColor Green
+        Write-Host "  OK: $Name" -ForegroundColor Green
         if ($result.Trim().Length -gt 0 -and $result -match "UnprocessedItems") {
             Write-Host "  Response: $result" -ForegroundColor Gray
         }
     }
     catch {
-        Write-Error "  ✗ Failed to batch write $Name : $_"
+        Write-Error "  FAILED to batch write $Name : $_"
     }
 }
 
@@ -62,8 +62,7 @@ Write-Batch -Name "Tables" -FileName "batch-tables.json"
 # 4. Feedbacks
 Write-Batch -Name "Feedback" -FileName "batch-feedbacks.json"
 
-Write-Host "`n🎉 DynamoDB Seeding finished!" -ForegroundColor Green
+Write-Host "`nDynamoDB Seeding finished!" -ForegroundColor Green
 Write-Host "You can verify the data in AWS Console or via:" -ForegroundColor Cyan
 Write-Host "  aws dynamodb scan --table-name Locations --region $Region" -ForegroundColor Gray
 Write-Host "  aws dynamodb scan --table-name Dishes --region $Region" -ForegroundColor Gray
-

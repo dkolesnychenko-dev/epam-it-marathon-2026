@@ -1,9 +1,9 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { forkJoin } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { EMPTY, forkJoin, merge, Observable, Subject, Subscription, timer } from 'rxjs';
+import { catchError, exhaustMap, finalize, startWith, switchMap, tap } from 'rxjs/operators';
 import { ParticipantCardComponent } from '@app/components/group-orders/participant-card/participant-card.component';
 import { GroupReservationStatus } from '@app/models/group-orders/group-status.model';
 import { Participant } from '@app/models/group-orders/participant.model';
@@ -13,6 +13,8 @@ import { ToastService } from '@app/services/toast/toast.service';
 import { ModalComponent } from '@app/shared/custom-components/modal/modal.component';
 import { consolidatePreOrder } from '@app/shared/helpers/consolidate-pre-order';
 
+const SYNC_INTERVAL_MS = 15_000;
+
 @Component({
   selector: 'app-group-order-page',
   imports: [ParticipantCardComponent, ModalComponent, CurrencyPipe, DatePipe],
@@ -20,7 +22,7 @@ import { consolidatePreOrder } from '@app/shared/helpers/consolidate-pre-order';
   styleUrl: './group-order-page.component.scss',
   changeDetection: ChangeDetectionStrategy.Eager,
 })
-export class GroupOrderPageComponent implements OnInit {
+export class GroupOrderPageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly groupOrdersService = inject(GroupOrdersService);
   private readonly toastService = inject(ToastService);
@@ -34,6 +36,13 @@ export class GroupOrderPageComponent implements OnInit {
   readonly error = signal<'notFound' | 'general' | null>(null);
   readonly isSubmitting = signal<boolean>(false);
   readonly showSubmitModal = signal<boolean>(false);
+
+  readonly lastUpdatedAt = signal<Date | null>(null);
+  readonly syncError = signal<boolean>(false);
+  readonly isRefreshing = signal<boolean>(false);
+
+  private readonly refresh$ = new Subject<void>();
+  private pollSubscription?: Subscription;
 
   readonly consolidatedOrder = computed(() => consolidatePreOrder(this.participants()));
 
@@ -49,12 +58,17 @@ export class GroupOrderPageComponent implements OnInit {
     this.loadData();
   }
 
+  ngOnDestroy(): void {
+    this.stopPolling();
+  }
+
   loadData(): void {
     const resId = this.reservationId;
     if (!resId) {
       return;
     }
 
+    this.stopPolling();
     this.loading.set(true);
     this.error.set(null);
 
@@ -76,7 +90,13 @@ export class GroupOrderPageComponent implements OnInit {
           this.participants.set(sessions.participants);
           this.status.set(status.status);
           this.ownerSessionId.set(ownerSessionId);
+          this.lastUpdatedAt.set(new Date());
+          this.syncError.set(false);
           this.loading.set(false);
+
+          if (status.status === 'Open') {
+            this.startPolling(this.invite()!.GroupReservationId);
+          }
         },
         error: (err: HttpErrorResponse) => {
           this.loading.set(false);
@@ -87,6 +107,62 @@ export class GroupOrderPageComponent implements OnInit {
           }
         },
       });
+  }
+
+  private startPolling(groupId: string): void {
+    this.stopPolling();
+
+    const manual$ = this.refresh$;
+    const auto$ = this.refresh$.pipe(
+      startWith(null),
+      switchMap(() => timer(SYNC_INTERVAL_MS, SYNC_INTERVAL_MS))
+    );
+
+    this.pollSubscription = merge(manual$, auto$)
+      .pipe(
+        exhaustMap(() => this.syncData$(groupId))
+      )
+      .subscribe();
+  }
+
+  private stopPolling(): void {
+    if (this.pollSubscription) {
+      this.pollSubscription.unsubscribe();
+      this.pollSubscription = undefined;
+    }
+  }
+
+  private syncData$(groupId: string): Observable<unknown> {
+    this.isRefreshing.set(true);
+    return forkJoin({
+      sessions: this.groupOrdersService.getSessions$(groupId, { silent: true }),
+      status: this.groupOrdersService.getStatus$(groupId, { silent: true }),
+    }).pipe(
+      tap({
+        next: ({ sessions, status }) => {
+          this.participants.set(sessions.participants);
+          this.status.set(status.status);
+          this.lastUpdatedAt.set(new Date());
+          this.syncError.set(false);
+          if (status.status !== 'Open') {
+            this.stopPolling();
+          }
+        },
+        error: () => {
+          this.syncError.set(true);
+        },
+      }),
+      finalize(() => {
+        this.isRefreshing.set(false);
+      }),
+      catchError(() => EMPTY)
+    );
+  }
+
+  onRefresh(): void {
+    if (this.status() === 'Open' && !this.isRefreshing()) {
+      this.refresh$.next();
+    }
   }
 
   openSubmitModal(): void {
@@ -115,6 +191,7 @@ export class GroupOrderPageComponent implements OnInit {
         this.isSubmitting.set(false);
         this.showSubmitModal.set(false);
         this.status.set('Submitted');
+        this.stopPolling();
         this.toastService.success('Pre-order sent to the restaurant');
       },
       error: () => {

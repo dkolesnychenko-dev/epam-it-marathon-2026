@@ -43,6 +43,28 @@
               </div>
             </div>
           }
+
+          @if (lastUpdatedAt(); as updatedAt) {
+            <div class="sync-bar" [class.sync-bar--error]="syncError()">
+              <span class="sync-message">
+                @if (syncError()) {
+                  Couldn't refresh. Showing data from {{ updatedAt | date:'HH:mm:ss' }}
+                } @else {
+                  Updated at {{ updatedAt | date:'HH:mm:ss' }}
+                }
+              </span>
+              @if (status() === 'Open') {
+                <button
+                  type="button"
+                  class="refresh-btn"
+                  [disabled]="isRefreshing()"
+                  (click)="onRefresh()"
+                >
+                  Refresh
+                </button>
+              }
+            </div>
+          }
         </header>
 
         @if (unsubmittedCount() > 0 && status() !== 'Submitted') {
