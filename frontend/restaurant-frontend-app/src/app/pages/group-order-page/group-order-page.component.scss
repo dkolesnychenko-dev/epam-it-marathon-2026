@@ -1,0 +1,175 @@
+@use 'app/shared/styles/abstracts/colors' as color;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: color.$bg-yellow;
+}
+
+.page {
+  padding: 24px 16px 48px;
+}
+
+.page-container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: color.$neutral-900;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  background-color: color.$orange-100;
+  color: color.$orange-600;
+}
+
+.meta-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+  padding: 16px;
+  background-color: color.$neutral-0;
+  border: 1px solid color.$neutral-200;
+  border-radius: 12px;
+  font-size: 14px;
+  color: color.$neutral-700;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.75;
+}
+
+.participants-section {
+  margin-bottom: 32px;
+}
+
+.participants-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.participant-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background-color: color.$neutral-0;
+  border: 1px solid color.$neutral-200;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.grand-total-block {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 480px;
+}
+
+.grand-total-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: color.$neutral-900;
+}
+
+.grand-total-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: color.$green-600;
+}
+
+.submit-button {
+  width: 100%;
+  max-width: 480px;
+  height: 48px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+
+  &:disabled {
+    background-color: color.$neutral-200;
+    color: color.$neutral-400;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled) {
+    background-color: color.$green-400;
+    color: color.$neutral-0;
+
+    &:hover {
+      background-color: color.$green-600;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 16px 12px 32px;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .meta-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .participants-list {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-summary {
+    padding: 16px;
+  }
+}
+

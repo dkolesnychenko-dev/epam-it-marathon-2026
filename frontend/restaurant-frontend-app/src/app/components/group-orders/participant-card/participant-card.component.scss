@@ -1,0 +1,140 @@
+@use 'app/shared/styles/abstracts/colors' as color;
+
+:host {
+  display: block;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background-color: color.$neutral-0;
+  border: 1px solid color.$neutral-200;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: color.$neutral-900;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.submitted {
+    background-color: color.$green-100;
+    color: color.$green-600;
+  }
+
+  &.pending {
+    background-color: color.$orange-100;
+    color: color.$orange-600;
+  }
+}
+
+.items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+
+  &.initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: color.$green-150;
+    color: color.$green-800;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.item-details {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: 14px;
+  color: color.$neutral-900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qty {
+  margin: 0;
+  font-size: 13px;
+  color: color.$neutral-600;
+  white-space: nowrap;
+}
+
+.price {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: color.$neutral-900;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.empty {
+  margin: 0;
+  padding: 8px 0;
+  font-size: 14px;
+  color: color.$neutral-400;
+}
+
+.subtotal-row {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid color.$neutral-200;
+}
+
+.subtotal {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: color.$neutral-900;
+}
+
