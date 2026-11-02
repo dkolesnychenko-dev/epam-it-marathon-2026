@@ -24,11 +24,6 @@ dotnet test backend/restaurant-backend-app/Tests/APIHandler.Tests.csproj --filte
 dotnet test backend/restaurant-backend-app/Tests/APIHandler.Tests.csproj --nologo --logger "console;verbosity=minimal"
 ```
 
-> [!TIP] **Frictionless Execution & Safe Command Allowlisting:**
-> To prevent confirmation prompts during test runs without compromising project safety:
-> Add the prefix `dotnet*` in **Settings -> General -> Global Permissions -> Tool Permissions -> Terminal**.
-> Antigravity will auto-approve compilation and test runs (`dotnet build`, `dotnet test`) while continuing to guard destructive actions (such as file deletion or git resets). Alternatively, choose **«Always Allow»** on the first prompt in the chat.
-
 ---
 
 ## Output Parsing & Return Contract

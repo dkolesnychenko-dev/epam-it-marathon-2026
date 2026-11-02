@@ -189,6 +189,11 @@ public class GuestSessionService(
             throw new ValidationException("Guest session does not belong to this group reservation.");
         }
 
+        if (session.IsOwnerSession)
+        {
+            throw new ValidationException("Cannot remove the owner session from the group order.");
+        }
+
         await guestSessionRepository.DeleteAsync(session);
 
         return await BuildGroupSessionsResponseAsync(groupReservationId, userId);
@@ -383,5 +388,39 @@ public class GuestSessionService(
         }
 
         return new GetGuestSessionResponse(name, items, total, session.IsSubmitted);
+    }
+
+    public async Task<GetOwnerSessionIdResponse> GetOwnerSessionIdAsync(string userId, string reservationId)
+    {
+        var reservation = await reservationRepository.GetReservationByIdAsync(reservationId)
+            ?? throw new ReservationNotFoundException($"Reservation with id {reservationId} not found.");
+
+        if (reservation.CustomerId != userId)
+        {
+            throw new ActionForbiddenException("Only the reservation owner can perform this action.");
+        }
+
+        var groupReservation = await groupReservationRepository.GetByReservationIdAsync(reservationId)
+            ?? throw new GroupReservationNotFoundException($"Group reservation for reservation {reservationId} not found.");
+
+        var sessions = await guestSessionRepository.GetAllByGroupReservationIdAsync(groupReservation.GroupReservationId);
+        var ownerSession = sessions.FirstOrDefault(s => s.IsOwnerSession);
+
+        if (ownerSession is null)
+        {
+            ownerSession = new GuestSession
+            {
+                Id = Guid.NewGuid().ToString(),
+                GroupReservationId = groupReservation.GroupReservationId,
+                GuestName = "Owner",
+                Dishes = [],
+                IsOwnerSession = true,
+                OwnerUserId = userId,
+                IsSubmitted = false
+            };
+            await guestSessionRepository.SaveAsync(ownerSession);
+        }
+
+        return new GetOwnerSessionIdResponse(ownerSession.Id);
     }
 }
