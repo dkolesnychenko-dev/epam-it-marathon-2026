@@ -1,0 +1,484 @@
+{
+  "Dishes": [
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "a1111111-1111-1111-1111-111111111111" },
+          "name": { "S": "Avocado Pine Nut Bowl" },
+          "description": { "S": "Nutrient-packed bowl with fresh hass avocado, toasted cedar pine nuts, organic quinoa, mixed greens, and citrus-tahini dressing." },
+          "dishType": { "N": "0" },
+          "price": { "N": "16.50" },
+          "weight": { "S": "320g" },
+          "calories": { "S": "410" },
+          "proteins": { "S": "9g" },
+          "fats": { "S": "28g" },
+          "carbohydrates": { "S": "32g" },
+          "vitamins": { "S": "A, B6, C, E, K" },
+          "imageUrl": { "S": "assets/img/dishes/avocado-pine-nut-bowl.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "a2222222-2222-2222-2222-222222222222" },
+          "name": { "S": "Fresh Strawberry Mint Salad" },
+          "description": { "S": "Sweet local strawberries paired with crisp baby spinach, fragrant mint leaves, creamy goat cheese crumbles, and aged balsamic glaze." },
+          "dishType": { "N": "0" },
+          "price": { "N": "14.00" },
+          "weight": { "S": "260g" },
+          "calories": { "S": "240" },
+          "proteins": { "S": "5g" },
+          "fats": { "S": "11g" },
+          "carbohydrates": { "S": "29g" },
+          "vitamins": { "S": "A, C, Folate" },
+          "imageUrl": { "S": "assets/img/dishes/fresh-strawberry-mint-salad.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "a3333333-3333-3333-3333-333333333333" },
+          "name": { "S": "Roasted Sweet Potato and Lentil Salad" },
+          "description": { "S": "Caramelized sweet potato cubes, French Puy lentils, wild arugula, toasted pumpkin seeds, and warm Dijon mustard vinaigrette." },
+          "dishType": { "N": "0" },
+          "price": { "N": "15.50" },
+          "weight": { "S": "340g" },
+          "calories": { "S": "380" },
+          "proteins": { "S": "14g" },
+          "fats": { "S": "12g" },
+          "carbohydrates": { "S": "54g" },
+          "vitamins": { "S": "A, B complex, Iron" },
+          "imageUrl": { "S": "assets/img/dishes/roasted-sweet-potato-and-lentil-salad.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "a4444444-4444-4444-4444-444444444444" },
+          "name": { "S": "Spring Salad" },
+          "description": { "S": "Vibrant garden salad with crunchy baby cucumbers, heirloom radishes, young greens, fresh dill, and cold-pressed extra virgin olive oil." },
+          "dishType": { "N": "0" },
+          "price": { "N": "12.50" },
+          "weight": { "S": "250g" },
+          "calories": { "S": "180" },
+          "proteins": { "S": "4g" },
+          "fats": { "S": "8g" },
+          "carbohydrates": { "S": "19g" },
+          "vitamins": { "S": "A, C, K, Iron" },
+          "imageUrl": { "S": "assets/img/dishes/spring-salad.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "a5555555-5555-5555-5555-555555555555" },
+          "name": { "S": "Mediterranean Bruschetta Trio" },
+          "description": { "S": "Toasted sourdough slices topped with classic tomato-basil concassé, wild mushroom tapenade, and whipped ricotta with honey." },
+          "dishType": { "N": "0" },
+          "price": { "N": "13.00" },
+          "weight": { "S": "220g" },
+          "calories": { "S": "290" },
+          "proteins": { "S": "7g" },
+          "fats": { "S": "10g" },
+          "carbohydrates": { "S": "42g" },
+          "vitamins": { "S": "C, K, Lycopene" },
+          "imageUrl": { "S": "assets/img/dishes/bruschetta-trio.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "a6666666-6666-6666-6666-666666666666" },
+          "name": { "S": "Truffle Burrata with Heirloom Tomatoes" },
+          "description": { "S": "Fresh Pugliese burrata filled with truffle cream, surrounded by colorful heirloom cherry tomatoes, basil oil, and fleur de sel." },
+          "dishType": { "N": "0" },
+          "price": { "N": "17.50" },
+          "weight": { "S": "280g" },
+          "calories": { "S": "430" },
+          "proteins": { "S": "18g" },
+          "fats": { "S": "34g" },
+          "carbohydrates": { "S": "12g" },
+          "vitamins": { "S": "A, Calcium, Phosphorus" },
+          "imageUrl": { "S": "assets/img/dishes/truffle-burrata.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "a7777777-7777-7777-7777-777777777777" },
+          "name": { "S": "Crispy Calamari Fritti" },
+          "description": { "S": "Tender squid rings lightly dusted in semolina and flash-fried to golden perfection, served with spicy marinara and lemon garlic aioli." },
+          "dishType": { "N": "0" },
+          "price": { "N": "16.00" },
+          "weight": { "S": "270g" },
+          "calories": { "S": "390" },
+          "proteins": { "S": "24g" },
+          "fats": { "S": "19g" },
+          "carbohydrates": { "S": "31g" },
+          "vitamins": { "S": "B12, Selenium, Zinc" },
+          "imageUrl": { "S": "assets/img/dishes/crispy-calamari.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "22222222-2222-2222-2222-222222222222" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "a8888888-8888-8888-8888-888888888888" },
+          "name": { "S": "Velvety Roasted Pumpkin Soup" },
+          "description": { "S": "Smooth butternut squash and roasted pumpkin velouté infused with ginger, coconut cream, and topped with toasted spicy seeds." },
+          "dishType": { "N": "0" },
+          "price": { "N": "11.50" },
+          "weight": { "S": "300g" },
+          "calories": { "S": "210" },
+          "proteins": { "S": "4g" },
+          "fats": { "S": "9g" },
+          "carbohydrates": { "S": "30g" },
+          "vitamins": { "S": "A, C, Potassium" },
+          "imageUrl": { "S": "assets/img/dishes/pumpkin-soup.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b1111111-1111-1111-1111-111111111111" },
+          "name": { "S": "Grilled Wild Salmon with Asparagus" },
+          "description": { "S": "Pan-seared Atlantic salmon fillet served with grilled green asparagus spears, roasted baby potatoes, and a velvety lemon-herb butter sauce." },
+          "dishType": { "N": "1" },
+          "price": { "N": "26.00" },
+          "weight": { "S": "380g" },
+          "calories": { "S": "560" },
+          "proteins": { "S": "42g" },
+          "fats": { "S": "26g" },
+          "carbohydrates": { "S": "14g" },
+          "vitamins": { "S": "D, B12, Omega-3" },
+          "imageUrl": { "S": "assets/img/dishes/grilled-salmon.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b2222222-2222-2222-2222-222222222222" },
+          "name": { "S": "Prime Ribeye Steak with Herb Butter" },
+          "description": { "S": "Black Angus ribeye steak grilled over charcoal to your liking, crowned with roasted garlic compound butter and truffle fries." },
+          "dishType": { "N": "1" },
+          "price": { "N": "34.00" },
+          "weight": { "S": "420g" },
+          "calories": { "S": "750" },
+          "proteins": { "S": "56g" },
+          "fats": { "S": "44g" },
+          "carbohydrates": { "S": "18g" },
+          "vitamins": { "S": "B6, B12, Zinc, Iron" },
+          "imageUrl": { "S": "assets/img/dishes/ribeye-steak.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "22222222-2222-2222-2222-222222222222" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b3333333-3333-3333-3333-333333333333" },
+          "name": { "S": "Wild Mushroom & Truffle Risotto" },
+          "description": { "S": "Slow-cooked Italian Carnaroli rice infused with porcini and chanterelle mushrooms, finished with 24-month aged Parmigiano Reggiano." },
+          "dishType": { "N": "1" },
+          "price": { "N": "21.00" },
+          "weight": { "S": "350g" },
+          "calories": { "S": "490" },
+          "proteins": { "S": "12g" },
+          "fats": { "S": "18g" },
+          "carbohydrates": { "S": "62g" },
+          "vitamins": { "S": "B complex, D, Potassium" },
+          "imageUrl": { "S": "assets/img/dishes/wild-mushroom-risotto.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b4444444-4444-4444-4444-444444444444" },
+          "name": { "S": "Pan-Roasted Duck Breast with Cherry Glaze" },
+          "description": { "S": "Crispy skinned French Barbarie duck breast paired with sweet sour Morello cherry reduction, parsnip puree, and braised red cabbage." },
+          "dishType": { "N": "1" },
+          "price": { "N": "29.50" },
+          "weight": { "S": "360g" },
+          "calories": { "S": "620" },
+          "proteins": { "S": "38g" },
+          "fats": { "S": "36g" },
+          "carbohydrates": { "S": "28g" },
+          "vitamins": { "S": "Iron, B6, Niacin" },
+          "imageUrl": { "S": "assets/img/dishes/duck-breast.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b5555555-5555-5555-5555-555555555555" },
+          "name": { "S": "Tagliatelle with Black Truffle & Parmigiano" },
+          "description": { "S": "Fresh handcrafted egg tagliatelle tossed in cultured Normandy butter, shaved Norcia black winter truffle, and aged cheese sauce." },
+          "dishType": { "N": "1" },
+          "price": { "N": "24.00" },
+          "weight": { "S": "330g" },
+          "calories": { "S": "580" },
+          "proteins": { "S": "19g" },
+          "fats": { "S": "28g" },
+          "carbohydrates": { "S": "64g" },
+          "vitamins": { "S": "A, B complex, Calcium" },
+          "imageUrl": { "S": "assets/img/dishes/truffle-pasta.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b6666666-6666-6666-6666-666666666666" },
+          "name": { "S": "Garlic Butter Shrimp Scampi" },
+          "description": { "S": "Jumbo tiger prawns sautéed in extra virgin olive oil, white wine, garlic, fresh parsley, and crushed chili flakes over linguine." },
+          "dishType": { "N": "1" },
+          "price": { "N": "25.00" },
+          "weight": { "S": "370g" },
+          "calories": { "S": "510" },
+          "proteins": { "S": "36g" },
+          "fats": { "S": "19g" },
+          "carbohydrates": { "S": "48g" },
+          "vitamins": { "S": "Selenium, B12, Phosphorus" },
+          "imageUrl": { "S": "assets/img/dishes/shrimp-scampi.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "22222222-2222-2222-2222-222222222222" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b7777777-7777-7777-7777-777777777777" },
+          "name": { "S": "Herb-Crusted Rack of Lamb" },
+          "description": { "S": "Tender roasted lamb chops coated in rosemary-thyme breadcrumb crust, served with ratatouille and rich mint red-wine jus." },
+          "dishType": { "N": "1" },
+          "price": { "N": "36.00" },
+          "weight": { "S": "400g" },
+          "calories": { "S": "720" },
+          "proteins": { "S": "48g" },
+          "fats": { "S": "46g" },
+          "carbohydrates": { "S": "18g" },
+          "vitamins": { "S": "B12, Zinc, Iron" },
+          "imageUrl": { "S": "assets/img/dishes/lamb-chops.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b8888888-8888-8888-8888-888888888888" },
+          "name": { "S": "Classic Chicken Parmigiana" },
+          "description": { "S": "Crispy panko-breaded chicken breast smothered in San Marzano tomato sauce, fresh melted mozzarella, and fragrant basil." },
+          "dishType": { "N": "1" },
+          "price": { "N": "20.50" },
+          "weight": { "S": "390g" },
+          "calories": { "S": "630" },
+          "proteins": { "S": "52g" },
+          "fats": { "S": "26g" },
+          "carbohydrates": { "S": "44g" },
+          "vitamins": { "S": "B6, Niacin, Calcium" },
+          "imageUrl": { "S": "assets/img/dishes/chicken-parmigiana.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "b9999999-9999-9999-9999-999999999999" },
+          "name": { "S": "Traditional Seafood Paella" },
+          "description": { "S": "Saffron bomba rice cooked with mussels, calamari, prawns, and Spanish bell peppers, featuring the coveted crispy socarrat base." },
+          "dishType": { "N": "1" },
+          "price": { "N": "28.00" },
+          "weight": { "S": "450g" },
+          "calories": { "S": "670" },
+          "proteins": { "S": "41g" },
+          "fats": { "S": "21g" },
+          "carbohydrates": { "S": "78g" },
+          "vitamins": { "S": "Iron, B12, Zinc" },
+          "imageUrl": { "S": "assets/img/dishes/seafood-paella.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "22222222-2222-2222-2222-222222222222" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "baaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" },
+          "name": { "S": "Baked Eggplant Parmigiana" },
+          "description": { "S": "Layers of tender grilled aubergine, rich marinara sauce, aged Parmesan, and fresh fior di latte mozzarella, baked until bubbling." },
+          "dishType": { "N": "1" },
+          "price": { "N": "18.00" },
+          "weight": { "S": "340g" },
+          "calories": { "S": "420" },
+          "proteins": { "S": "17g" },
+          "fats": { "S": "24g" },
+          "carbohydrates": { "S": "36g" },
+          "vitamins": { "S": "A, C, Potassium" },
+          "imageUrl": { "S": "assets/img/dishes/eggplant-parmigiana.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "c1111111-1111-1111-1111-111111111111" },
+          "name": { "S": "Classic Italian Tiramisu" },
+          "description": { "S": "Traditional Venetian dessert layered with espresso-soaked savoiardi ladyfingers, rich mascarpone cream, and Dutch cocoa powder." },
+          "dishType": { "N": "2" },
+          "price": { "N": "9.50" },
+          "weight": { "S": "180g" },
+          "calories": { "S": "390" },
+          "proteins": { "S": "7g" },
+          "fats": { "S": "22g" },
+          "carbohydrates": { "S": "41g" },
+          "vitamins": { "S": "A, Calcium" },
+          "imageUrl": { "S": "assets/img/dishes/classic-tiramisu.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "c2222222-2222-2222-2222-222222222222" },
+          "name": { "S": "Belgian Chocolate Lava Cake" },
+          "description": { "S": "Decadent Belgian 70% dark chocolate cake with a flowing molten core, served with a scoop of artisanal bourbon vanilla bean gelato." },
+          "dishType": { "N": "2" },
+          "price": { "N": "11.00" },
+          "weight": { "S": "210g" },
+          "calories": { "S": "460" },
+          "proteins": { "S": "6g" },
+          "fats": { "S": "26g" },
+          "carbohydrates": { "S": "52g" },
+          "vitamins": { "S": "Magnesium, Iron" },
+          "imageUrl": { "S": "assets/img/dishes/chocolate-lava-cake.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "c3333333-3333-3333-3333-333333333333" },
+          "name": { "S": "Vanilla Bean Panna Cotta with Berries" },
+          "description": { "S": "Silky smooth vanilla cream dessert topped with a vibrant raspberry-blackberry coulis and crystallized mint leaves." },
+          "dishType": { "N": "2" },
+          "price": { "N": "8.50" },
+          "weight": { "S": "170g" },
+          "calories": { "S": "290" },
+          "proteins": { "S": "5g" },
+          "fats": { "S": "16g" },
+          "carbohydrates": { "S": "31g" },
+          "vitamins": { "S": "C, Calcium" },
+          "imageUrl": { "S": "assets/img/dishes/berry-panna-cotta.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "22222222-2222-2222-2222-222222222222" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "c4444444-4444-4444-4444-444444444444" },
+          "name": { "S": "New York Baked Cheesecake" },
+          "description": { "S": "Ultra-creamy Philadelphia cream cheese filling on buttery graham cracker crust, finished with passion fruit purée glaze." },
+          "dishType": { "N": "2" },
+          "price": { "N": "10.00" },
+          "weight": { "S": "190g" },
+          "calories": { "S": "440" },
+          "proteins": { "S": "8g" },
+          "fats": { "S": "27g" },
+          "carbohydrates": { "S": "43g" },
+          "vitamins": { "S": "A, Calcium" },
+          "imageUrl": { "S": "assets/img/dishes/new-york-cheesecake.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "c5555555-5555-5555-5555-555555555555" },
+          "name": { "S": "Artisanal Pistachio Baklava" },
+          "description": { "S": "Crispy golden layers of handmade phyllo dough packed with crushed Antep pistachios and scented with orange blossom honey syrup." },
+          "dishType": { "N": "2" },
+          "price": { "N": "9.00" },
+          "weight": { "S": "150g" },
+          "calories": { "S": "370" },
+          "proteins": { "S": "6g" },
+          "fats": { "S": "21g" },
+          "carbohydrates": { "S": "40g" },
+          "vitamins": { "S": "E, Copper, Manganese" },
+          "imageUrl": { "S": "assets/img/dishes/pistachio-baklava.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "22222222-2222-2222-2222-222222222222" }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "id": { "S": "c6666666-6666-6666-6666-666666666666" },
+          "name": { "S": "Glazed Meyer Lemon Tart" },
+          "description": { "S": "Crisp sweet pastry crust filled with tangy Meyer lemon curd, crowned with lightly torched Italian meringue peaks." },
+          "dishType": { "N": "2" },
+          "price": { "N": "8.50" },
+          "weight": { "S": "160g" },
+          "calories": { "S": "310" },
+          "proteins": { "S": "5g" },
+          "fats": { "S": "14g" },
+          "carbohydrates": { "S": "42g" },
+          "vitamins": { "S": "C, Folate" },
+          "imageUrl": { "S": "assets/img/dishes/lemon-tart.jpg" },
+          "state": { "N": "1" },
+          "locationId": { "S": "11111111-1111-1111-1111-111111111111" }
+        }
+      }
+    }
+  ]
+}
