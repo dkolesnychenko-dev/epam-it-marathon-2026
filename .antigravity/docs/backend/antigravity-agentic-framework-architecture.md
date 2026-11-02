@@ -24,6 +24,7 @@
    - [6.1 Platform Primitives](#61-platform-primitives)
    - [6.2 Portability Across Models and Products](#62-portability-across-models-and-products)
    - [6.3 Harness Comparison: Antigravity and Claude Code](#63-harness-comparison-antigravity-and-claude-code)
+   - [6.4 Terminal Sandboxing, Windows Loopback Sockets & Command Allowlisting](#64-terminal-sandboxing-windows-loopback-sockets--command-allowlisting)
 7. [Agent Matrix & Role Specialization](#7-agent-matrix--role-specialization)
 8. [Orchestration Delivery Lifecycle](#8-orchestration-delivery-lifecycle)
    - [8.1 Developer Git Workflow](#81-developer-git-workflow)
@@ -313,6 +314,29 @@ Claude Code is a product built on the same kind of harness described in Section 
 3. **The advisory reviewer can be enforced.** `code-review-agent` can use `disallowedTools: Write, Edit`, which removes the write tools at the platform level (see Section 14.3).
 4. **Path rules need a different mechanism.** A tool list controls which tools are allowed, but not which folders they may write to. Keeping the lambda agent out of `Tests/` and the test agent out of `dnapp/` still needs path-based permission rules or hooks. Check the current permission syntax in the Claude Code documentation before relying on it.
 5. **Model choice can be fixed per agent.** `model: inherit` keeps the same meaning. If you prefer a fixed model per agent, for example a higher-capacity model for the orchestrator and reviewer and a faster one for the implementation and test agents, set it explicitly. This is a suggestion, not a requirement of the profiles.
+
+### 6.4 Terminal Sandboxing, Windows Loopback Sockets & Command Allowlisting
+
+Antigravity executes terminal commands (`run_command`) in an isolated sandbox environment by default (`proceed-in-sandbox`). Understanding how this behaves for .NET on Windows is critical for frictionless autonomous agent operation:
+
+#### 1. Why `dotnet test` Prompts for Confirmation
+- **Sandbox Isolation:** Standard Sandbox Mode blocks all external network I/O, local loopback sockets (`127.0.0.1`), and access to directories outside the workspace (e.g. `C:\Users\<user>\.dotnet\`, `AppData\Roaming\NuGet`).
+- **Windows VSTest Socket Behavior:** Under Windows, `dotnet test` uses an internal local TCP socket to communicate between the CLI runner process and `testhost.exe`. In Sandbox Mode, this raises `System.Net.Sockets.SocketException (10013): An attempt was made to access a socket in a way forbidden by its access permissions`.
+- **Bypass Sandbox Modal:** When the agent executes unsandboxed (`BypassSandbox: true`), Antigravity displays an interactive permission prompt in the UI: *"Allow run tests with coverage?"*.
+
+#### 2. Configuring Frictionless Execution (Safe vs. Unsafe Approaches)
+
+- **Recommended & Safe Approach (`Tool Permissions -> Terminal`):**
+  - Navigate to **Settings -> General -> Global Permissions -> Tool Permissions**.
+  - In the **Terminal** section, add the command prefix/pattern:
+    ```text
+    dotnet*
+    ```
+  - **Security Guarantee:** Antigravity auto-approves safe compilation and test runs (`dotnet build`, `dotnet test`). Destructive operations (`Remove-Item`, git branch resets, shell scripts) continue to require explicit user confirmation.
+  - Alternatively, select **«Always Allow»** directly from the confirmation modal when prompted in the chat interface.
+
+- **Unsafe Approach (Global `always-proceed`):**
+  - Enabling an unrestricted `always-proceed` execution policy bypasses confirmation prompts across all terminal commands indiscriminately. If an agent encounters an edge case and attempts a destructive cleanup (e.g. `Remove-Item -Recurse` or `git reset --hard`), it will execute immediately without human oversight. **Not recommended for production or team repositories.**
 
 ---
 

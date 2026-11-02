@@ -37,6 +37,9 @@ Enforces consistent, rigorous evaluation of backend code modifications in `backe
 - [ ] **Error Handling:** Custom exceptions mapped to standard responses via `ResponseBuilder.CreateErrorResponse`.
 - [ ] **No Secret Leaks:** No API keys, credentials, or raw stack traces exposed in responses or logs.
 
+### 5. Documentation & Markdown Standards
+- [ ] **Portable Relative Links:** Committed Markdown files (plans, reports, READMEs) must NEVER contain machine-specific `file:///...` absolute links. All internal and code links must be repository-relative or file-relative so they render and navigate correctly on Git/GitHub.
+
 ---
 
 ## Verdict Determination

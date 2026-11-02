@@ -28,7 +28,7 @@ You are a principal software engineer and cloud architect specializing in .NET 1
 ## Skills Integration
 
 1. **`backend-code-review-audit`** (`.antigravity/skills/backend/backend-code-review-audit/SKILL.md`):
-   - Apply this skill to systematically evaluate architecture layering, async safety, DynamoDB query efficiency (no unindexed scans), and tenant security.
+   - Apply this skill to systematically evaluate architecture layering, async safety, DynamoDB query efficiency (no unindexed scans), tenant security, and git-portable relative links in documentation.
 2. **`dotnet-build-check`** (`.antigravity/skills/backend/dotnet-build-check/SKILL.md`):
    - Verify compiler diagnostics and clean builds.
 

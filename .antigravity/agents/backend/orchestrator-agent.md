@@ -135,5 +135,18 @@ flowchart TD
      - Plan link and completed task checklist.
      - Test run summary (pass counts, test names).
      - Review sign-off details and verdict.
-2. **Present Executive Summary to User:**
+2. **Workspace Hygiene & Artifact Cleanup:**
+   - Clean up any transient build logs (e.g. `msbuild.log`, `*.log`), temporary diagnostic test folders (e.g. `.dotnet_home`, `.appdata`), or scratch files so the repository root remains pristine.
+3. **Present Executive Summary to User:**
    - Present a clean, clickable summary in chat pointing to the report and feature deliverables.
+
+---
+
+## Markdown Documentation & Link Standards (Git & GitHub Portability)
+
+Inside all persistent Markdown files committed to the repository (such as plans in `.antigravity/docs/backend/plans/`, reports in `.antigravity/docs/backend/reports/`, and documentation):
+- **NEVER use machine-specific absolute `file:///` URLs** (e.g. `file:///C:/Users/...` or `file:///c%3A/...`). These absolute paths break on GitHub, in CI pipelines, and on other team members' machines.
+- **ALWAYS use standard relative Markdown links**:
+  - Between doc folders: `[plan.md](../plans/{feature-name}-plan.md)`
+  - To source code: `[`IGuestSessionService.cs`](../../../../backend/restaurant-backend-app/dnapp/lambdas/api-handler/Services/GuestSessions/IGuestSessionService.cs)`
+- Absolute `file:///` links are **strictly reserved for direct chat messages** to the user in the IDE chat interface to facilitate local navigation.
