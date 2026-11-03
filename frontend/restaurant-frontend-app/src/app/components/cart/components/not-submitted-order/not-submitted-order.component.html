@@ -2,7 +2,7 @@
   <div class="content">
     <div class="order">
       <span class="body-bold">
-        Pre-order #{{ order().orderId }}
+        Pre-order #{{ order().orderId.slice(0, 8) }}
         ({{ order().reservationAddress }}, {{ order().reservationTime }})
       </span>
 

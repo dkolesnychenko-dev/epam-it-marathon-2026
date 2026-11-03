@@ -149,14 +149,33 @@ export class CardReservationComponent {
     );
   });
 
+  private getTableLabel(): string {
+    const reservation = this.r();
+    if (reservation.tableName && reservation.tableName.trim()) {
+      return reservation.tableName.startsWith('Table')
+        ? reservation.tableName
+        : `Table ${reservation.tableName}`;
+    }
+    const tableId = reservation.tableId;
+    if (tableId) {
+      const match = tableId.match(/^t\d+(\d{2})-/i);
+      if (match) {
+        return `Table ${parseInt(match[1], 10)}`;
+      }
+    }
+    return `Table ${tableId}`;
+  }
+
+  onGroupPreOrder(): void {
+    void this.router.navigate(['/reservations', this.r().id, 'group-order']);
+  }
+
   onPreOrder(): void {
     const reservation = this.r();
     const startTime = new Date(reservation.startTime);
     const endTime = new Date(reservation.endTime);
 
-    const tableLabel =
-      reservation.tableName ||
-      `Table ${reservation.tableId}`;
+    const tableLabel = this.getTableLabel();
 
     const queryParams: Params = {
       preOrder: 'true',

@@ -1,9 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   input,
   output,
 } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Order } from '@app/models/orders/order.model';
 
@@ -16,6 +18,8 @@ import { Order } from '@app/models/orders/order.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SubmitOrderModalComponent {
+  private readonly router = inject(Router);
+
   readonly order = input.required<Order>();
 
   readonly canceled = output<void>();
@@ -32,5 +36,12 @@ export class SubmitOrderModalComponent {
 
   closeModal(): void {
     this.closed.emit();
+  }
+
+  goToGroupOrder(): void {
+    this.closeModal();
+    if (this.order().reservationId) {
+      void this.router.navigate(['/reservations', this.order().reservationId, 'group-order']);
+    }
   }
 }
