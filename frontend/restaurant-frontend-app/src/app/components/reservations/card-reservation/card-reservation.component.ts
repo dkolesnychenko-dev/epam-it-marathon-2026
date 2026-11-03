@@ -134,8 +134,7 @@ export class CardReservationComponent {
   readonly hasPreOrder = computed(() => {
     return (
       this.r().hasSubmittedPreOrder === true ||
-      this.preOrderItemCount() > 0 ||
-      this.r().preOrder != null
+      this.preOrderItemCount() > 0
     );
   });
 
