@@ -30,8 +30,8 @@ crash.*.log
 
 # AWS local credentials/config if accidentally created in repo
 .aws/
-credentials
-config
+.aws/credentials
+.aws/config
 
 # .NET / Build artifacts & logs
 bin/

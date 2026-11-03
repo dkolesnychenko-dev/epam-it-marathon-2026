@@ -1,5 +1,4 @@
 @use 'app/shared/styles/abstracts/colors' as color;
-@use 'app/shared/styles/card' as card;
 
 :host {
   display: block;
@@ -42,6 +41,28 @@
 
   strong {
     font-weight: 600;
+  }
+}
+
+/* Cart icon button in the right corner of the strip */
+.cart-btn {
+  position: absolute;
+  right: 16px;
+
+  width: 36px;
+  height: 36px;
+
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 20px;
+    height: 20px;
   }
 }
 
