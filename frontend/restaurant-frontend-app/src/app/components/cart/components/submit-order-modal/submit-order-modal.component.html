@@ -67,19 +67,21 @@
 
       <button
         type="button"
-        class="button button--secondary button--large"
+        [class]="hasMultipleGuests() ? 'button button--secondary button--large' : 'button button--primary button--large'"
         (click)="editOrder()"
       >
         Edit Pre-order
       </button>
 
-      <button
-        type="button"
-        class="button button--primary button--large"
-        (click)="goToGroupOrder()"
-      >
-        Group Pre-order
-      </button>
+      @if (hasMultipleGuests()) {
+        <button
+          type="button"
+          class="button button--primary button--large"
+          (click)="goToGroupOrder()"
+        >
+          Group Pre-order
+        </button>
+      }
     </div>
   </div>
 </div>

@@ -177,7 +177,7 @@
             class="button button--primary button--large"
             (click)="onPreOrder()"
           >
-            Pre-order
+            {{ hasPreOrder() ? 'Edit Pre-order' : 'Pre-order' }}
           </button>
         }
       }

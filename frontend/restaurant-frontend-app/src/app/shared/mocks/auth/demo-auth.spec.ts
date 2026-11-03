@@ -1,5 +1,5 @@
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { applyDemoLoginFromUrl, createDemoTokens, DEMO_USER, isDemoAuthorization } from './demo-auth';
+import { applyDemoLoginFromUrl, createDemoTokens, DEMO_USER, DEMO_WAITER, isDemoAuthorization } from './demo-auth';
 
 describe('demo auth (dev-only)', () => {
   const jwt = new JwtHelperService();
@@ -9,6 +9,11 @@ describe('demo auth (dev-only)', () => {
     expect(accessToken).toBe(idToken);
     expect(jwt.isTokenExpired(idToken)).toBeFalse();
     expect(jwt.decodeToken(idToken)['cognito:groups']).toEqual([DEMO_USER.role]);
+  });
+
+  it('creates a token with Waiter role when requested', () => {
+    const { idToken } = createDemoTokens(DEMO_WAITER);
+    expect(jwt.decodeToken(idToken)['cognito:groups']).toEqual([DEMO_WAITER.role]);
   });
 
   it('recognises only demo tokens', () => {
@@ -25,6 +30,16 @@ describe('demo auth (dev-only)', () => {
     expect(applied).toBeTrue();
     expect(storage.setItem).toHaveBeenCalledWith('user', JSON.stringify(DEMO_USER));
     expect(history.replaceState).toHaveBeenCalledWith(undefined, '', '/reservations/demo-reservation/group-order');
+  });
+
+  it('logs in as Waiter from ?demo=waiter', () => {
+    const storage = jasmine.createSpyObj<Storage>('Storage', ['setItem']);
+    const history = jasmine.createSpyObj<History>('History', ['replaceState']);
+    const applied = applyDemoLoginFromUrl({ href: 'http://localhost:4200/waiter-reservations?demo=waiter' }, storage, history);
+
+    expect(applied).toBeTrue();
+    expect(storage.setItem).toHaveBeenCalledWith('user', JSON.stringify(DEMO_WAITER));
+    expect(history.replaceState).toHaveBeenCalledWith(undefined, '', '/waiter-reservations');
   });
 
   it('does nothing without ?demo', () => {
