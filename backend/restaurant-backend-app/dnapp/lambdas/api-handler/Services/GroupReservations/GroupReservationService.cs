@@ -188,7 +188,7 @@ public class GroupReservationService(
             ?? throw new ValidationException($"Order for reservation '{reservationId}' was not found.");
 
         var sessions = await guestSessionRepository.GetAllByGroupReservationIdAsync(groupReservationId);
-        var submittedSessions = sessions.Where(s => s.IsSubmitted).ToList();
+        var submittedSessions = sessions.Where(s => !s.IsOwnerSession && s.IsSubmitted).ToList();
         if (submittedSessions.Count == 0)
         {
             throw new ValidationException("There are no submitted guest sessions.");
