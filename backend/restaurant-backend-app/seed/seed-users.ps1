@@ -150,12 +150,20 @@ foreach ($user in $users) {
 
         if ($sub) {
             $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-            $dynamoItem = "{`"userId`":{`"S`":`"$sub`"},`"locationId`":{`"S`":`"$($user.locationId)`"},`"createdAt`":{`"S`":`"$now`"},`"reservations`":{`"L`":[]}}"
-
+            $itemObj = @{
+                userId = @{ S = $sub }
+                locationId = @{ S = $user.locationId }
+                createdAt = @{ S = $now }
+                reservations = @{ L = @() }
+            }
+            $tmpFile = [System.IO.Path]::GetTempFileName()
+            $jsonContent = $itemObj | ConvertTo-Json -Compress
+            [System.IO.File]::WriteAllText($tmpFile, $jsonContent, [System.Text.UTF8Encoding]::new($false))
             aws dynamodb put-item `
                 --table-name Waiters `
-                --item $dynamoItem `
+                --item "file://$tmpFile" `
                 --region $Region | Out-Null
+            Remove-Item -Path $tmpFile -Force -ErrorAction SilentlyContinue
 
             Write-Host "    OK: Waiter mapped in DynamoDB (sub: $sub -> location: $($user.locationId))" -ForegroundColor Green
         } else {
