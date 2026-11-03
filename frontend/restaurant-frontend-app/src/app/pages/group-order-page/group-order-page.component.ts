@@ -194,6 +194,7 @@ export class GroupOrderPageComponent implements OnInit, OnDestroy {
         this.isSubmitting.set(false);
         this.showSubmitModal.set(false);
         this.status.set('Submitted');
+        this.participants.set(this.participants().filter((p) => p.isSubmitted));
         this.stopPolling();
         this.toastService.success('Pre-order sent to the restaurant');
       },

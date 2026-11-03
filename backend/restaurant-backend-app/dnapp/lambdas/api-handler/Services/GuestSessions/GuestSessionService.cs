@@ -492,7 +492,7 @@ public class GuestSessionService(
             }
         }
 
-        return new GetOwnerSessionIdResponse(ownerSession.Id);
+        return new GetOwnerSessionIdResponse(ownerSession.Id, groupReservation.GroupReservationId);
     }
 
     private static string GenerateDeterministicOwnerSessionId(string groupReservationId)

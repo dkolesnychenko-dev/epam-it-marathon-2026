@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpContext } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { HttpClient, HttpContext, HttpErrorResponse } from '@angular/common/http';
+import { forkJoin, Observable } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { API_BASE_URL } from '@app/shared/config/api-base-url.token';
 import { SKIP_ERROR_TOAST } from '@app/auth/skip-error-toast.context';
 import { GuestInvite } from '@app/models/reservations/guest-invite.model';
@@ -16,9 +16,33 @@ export class GroupOrdersService {
   private readonly http = inject(HttpClient);
 
   getGroupInvite$(reservationId: string): Observable<GuestInvite> {
+    const context = new HttpContext().set(SKIP_ERROR_TOAST, true);
     return this.http
-      .get<{ token: string }>(`${this.baseUrl}/reservations/${reservationId}/invite-token`)
-      .pipe(switchMap(({ token }) => this.http.get<GuestInvite>(`${this.baseUrl}/guest/invites/${token}`)));
+      .get<{ token: string }>(`${this.baseUrl}/reservations/${reservationId}/invite-token`, { context })
+      .pipe(
+        switchMap(({ token }) => this.http.get<GuestInvite>(`${this.baseUrl}/guest/invites/${token}`, { context })),
+        catchError((err: HttpErrorResponse) => {
+          if (err.status === 400 || err.status === 404) {
+            return forkJoin({
+              owner: this.getOwnerSession$(reservationId),
+              res: this.http.get<any>(`${this.baseUrl}/reservations/${reservationId}`),
+            }).pipe(
+              map(({ owner, res }): GuestInvite => ({
+                GroupReservationId: owner.groupReservationId ?? '',
+                LocationId: res.locationId ?? '',
+                RestaurantName: res.restaurantName ?? '',
+                LocationAddress: res.locationAddress ?? '',
+                StartTime: res.startTime ? new Date(res.startTime).toISOString() : '',
+                EndTime: res.endTime ? new Date(res.endTime).toISOString() : '',
+                MaxGuestCount: res.guestCount ?? 0,
+                TableNumber: res.tableNumber ?? (res.tableName ? parseInt(res.tableName.replace(/\D/g, ''), 10) || 1 : 1),
+                InviterName: res.createdByName ?? 'Host',
+              }))
+            );
+          }
+          throw err;
+        })
+      );
   }
 
   getSessions$(groupReservationId: string, options?: { silent?: boolean }): Observable<GroupSessionsResponse> {
@@ -31,10 +55,12 @@ export class GroupOrdersService {
     });
   }
 
+  getOwnerSession$(reservationId: string): Observable<OwnerSessionResponse> {
+    return this.http.get<OwnerSessionResponse>(`${this.baseUrl}/reservations/${reservationId}/guest-session-id`);
+  }
+
   getOwnerSessionId$(reservationId: string): Observable<string> {
-    return this.http
-      .get<OwnerSessionResponse>(`${this.baseUrl}/reservations/${reservationId}/guest-session-id`)
-      .pipe(map((res) => res.guestSessionId));
+    return this.getOwnerSession$(reservationId).pipe(map((res) => res.guestSessionId));
   }
 
   getStatus$(groupReservationId: string, options?: { silent?: boolean }): Observable<GroupStatusResponse> {
