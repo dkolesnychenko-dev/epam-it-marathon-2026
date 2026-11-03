@@ -1,0 +1,39 @@
+[
+  {
+    "email": "customer@greentasty.com",
+    "password": "Password123!",
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "Customer",
+    "description": "Standard customer account for table booking, pre-orders, and feedback."
+  },
+  {
+    "email": "waiter@greentasty.com",
+    "password": "Password123!",
+    "firstName": "David",
+    "lastName": "Beridze",
+    "role": "Waiter",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "locationAddress": "9 Irakli Abashidze Street",
+    "description": "Waiter account assigned to Location 1 (Abashidze)."
+  },
+  {
+    "email": "waiter.rustaveli@greentasty.com",
+    "password": "Password123!",
+    "firstName": "Luka",
+    "lastName": "Shengelia",
+    "role": "Waiter",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "locationAddress": "48 Shota Rustaveli Avenue",
+    "description": "Waiter account assigned to Location 3 (Rustaveli)."
+  },
+  {
+    "email": "admin@greentasty.com",
+    "password": "Password123!",
+    "firstName": "Admin",
+    "lastName": "Manager",
+    "role": "Admin",
+    "description": "Restaurant manager account with access to reports dashboard."
+  }
+]
+

@@ -11,7 +11,8 @@
 #>
 
 param(
-    [string]$Region = "eu-north-1"
+    [string]$Region = "eu-north-1",
+    [switch]$SeedUsers = $true
 )
 
 $ErrorActionPreference = "Stop"
@@ -66,7 +67,20 @@ Write-Batch -Name "Feedback" -FileName "batch-feedbacks.json"
 Write-Batch -Name "Waiters" -FileName "batch-waiters.json"
 
 Write-Host "`nDynamoDB Seeding finished!" -ForegroundColor Green
-Write-Host "You can verify the data via:" -ForegroundColor Cyan
+
+if ($SeedUsers) {
+    $seedUsersScript = Join-Path $ScriptDir "seed-users.ps1"
+    if (Test-Path $seedUsersScript) {
+        try {
+            & $seedUsersScript -Region $Region
+        }
+        catch {
+            Write-Warning "User seeding encountered an error: $_"
+        }
+    }
+}
+
+Write-Host "`nYou can verify the data via:" -ForegroundColor Cyan
 Write-Host "  aws dynamodb scan --table-name Locations --region $Region --select COUNT" -ForegroundColor Gray
 Write-Host "  aws dynamodb scan --table-name Dishes --region $Region --select COUNT" -ForegroundColor Gray
 Write-Host "  aws dynamodb scan --table-name Tables --region $Region --select COUNT" -ForegroundColor Gray

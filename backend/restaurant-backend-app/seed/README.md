@@ -69,6 +69,18 @@ Global Secondary Index: **`locationId-index`** (Partition Key: `locationId`, Str
 
 ---
 
+### 👤 1.4 Test Accounts (`data/users.json`)
+Pre-configured test accounts ready for login and role verification:
+
+| Role | Email | Password | Name | Assigned Location | Notes |
+|---|---|---|---|---|---|
+| **Customer** | `customer@greentasty.com` | `Password123!` | John Doe | — | Book tables, group pre-orders, leave feedback |
+| **Waiter** | `waiter@greentasty.com` | `Password123!` | David Beridze | 9 Irakli Abashidze St (`1111...`) | Waiter Dashboard, menu, table pre-orders |
+| **Waiter** | `waiter.rustaveli@greentasty.com` | `Password123!` | Luka Shengelia | 48 Shota Rustaveli Ave (`3333...`) | Waiter Dashboard for Rustaveli branch |
+| **Admin** | `admin@greentasty.com` | `Password123!` | Admin Manager | — | Access to `/reports` analytics |
+
+---
+
 ## 🖼️ 2. Dish Photos & Images Guide
 
 ### 2.1 Specifications
