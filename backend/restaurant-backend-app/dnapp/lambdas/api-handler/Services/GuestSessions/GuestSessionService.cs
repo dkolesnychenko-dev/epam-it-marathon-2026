@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using APIHandler.Services.Notifications;
 
@@ -206,13 +207,27 @@ public class GuestSessionService(
         var group = await groupReservationRepository.GetGroupReservationByIdAsync(groupReservationId);
         var sessions = await guestSessionRepository.GetAllByGroupReservationIdAsync(groupReservationId);
 
+        var ownerSessions = sessions.Where(s => s.IsOwnerSession).ToList();
+        if (ownerSessions.Count > 1)
+        {
+            var primaryOwnerSession = ownerSessions.FirstOrDefault(s => s.OwnerUserId == userId) ?? ownerSessions[0];
+            foreach (var duplicate in ownerSessions)
+            {
+                if (duplicate.Id != primaryOwnerSession.Id)
+                {
+                    sessions.Remove(duplicate);
+                    await guestSessionRepository.DeleteAsync(duplicate);
+                }
+            }
+        }
+
         var ownerSession = sessions.FirstOrDefault(s => s.IsOwnerSession);
         if (ownerSession == null && group != null)
         {
             var order = await orderRepository.GetOrderByReservationIdAsync(group.ReservationId);
             ownerSession = new GuestSession
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = GenerateDeterministicOwnerSessionId(groupReservationId),
                 GroupReservationId = groupReservationId,
                 GuestName = "Owner",
                 Dishes = order?.Dishes ?? [],
@@ -223,12 +238,12 @@ public class GuestSessionService(
             await guestSessionRepository.SaveAsync(ownerSession);
             sessions.Add(ownerSession);
         }
-        else if (ownerSession != null && group != null && (ownerSession.Dishes == null || ownerSession.Dishes.Count == 0 || !ownerSession.IsSubmitted))
+        else if (ownerSession != null && group != null)
         {
             var order = await orderRepository.GetOrderByReservationIdAsync(group.ReservationId);
-            if (order?.Dishes != null && order.Dishes.Count > 0)
+            if (order != null)
             {
-                ownerSession.Dishes = order.Dishes;
+                ownerSession.Dishes = order.Dishes ?? [];
                 ownerSession.IsSubmitted = order.Status == OrderStatus.SubmittedByCustomer;
                 await guestSessionRepository.SaveAsync(ownerSession);
             }
@@ -435,6 +450,20 @@ public class GuestSessionService(
             ?? throw new GroupReservationNotFoundException($"Group reservation for reservation {reservationId} not found.");
 
         var sessions = await guestSessionRepository.GetAllByGroupReservationIdAsync(groupReservation.GroupReservationId);
+
+        var ownerSessions = sessions.Where(s => s.IsOwnerSession).ToList();
+        if (ownerSessions.Count > 1)
+        {
+            var primaryOwnerSession = ownerSessions.FirstOrDefault(s => s.OwnerUserId == userId) ?? ownerSessions[0];
+            foreach (var duplicate in ownerSessions)
+            {
+                if (duplicate.Id != primaryOwnerSession.Id)
+                {
+                    await guestSessionRepository.DeleteAsync(duplicate);
+                }
+            }
+        }
+
         var ownerSession = sessions.FirstOrDefault(s => s.IsOwnerSession);
 
         if (ownerSession is null)
@@ -442,7 +471,7 @@ public class GuestSessionService(
             var order = await orderRepository.GetOrderByReservationIdAsync(reservationId);
             ownerSession = new GuestSession
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = GenerateDeterministicOwnerSessionId(groupReservation.GroupReservationId),
                 GroupReservationId = groupReservation.GroupReservationId,
                 GuestName = "Owner",
                 Dishes = order?.Dishes ?? [],
@@ -452,17 +481,24 @@ public class GuestSessionService(
             };
             await guestSessionRepository.SaveAsync(ownerSession);
         }
-        else if (ownerSession.Dishes == null || ownerSession.Dishes.Count == 0 || !ownerSession.IsSubmitted)
+        else
         {
             var order = await orderRepository.GetOrderByReservationIdAsync(reservationId);
-            if (order?.Dishes != null && order.Dishes.Count > 0)
+            if (order != null)
             {
-                ownerSession.Dishes = order.Dishes;
+                ownerSession.Dishes = order.Dishes ?? [];
                 ownerSession.IsSubmitted = order.Status == OrderStatus.SubmittedByCustomer;
                 await guestSessionRepository.SaveAsync(ownerSession);
             }
         }
 
         return new GetOwnerSessionIdResponse(ownerSession.Id);
+    }
+
+    private static string GenerateDeterministicOwnerSessionId(string groupReservationId)
+    {
+        using var md5 = MD5.Create();
+        var hash = md5.ComputeHash(Encoding.UTF8.GetBytes($"owner-{groupReservationId}"));
+        return new Guid(hash).ToString();
     }
 }

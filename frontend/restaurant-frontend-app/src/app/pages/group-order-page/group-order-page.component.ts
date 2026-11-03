@@ -90,9 +90,9 @@ export class GroupOrderPageComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: ({ sessions, status, ownerSessionId }) => {
-          this.participants.set(sessions.participants);
-          this.status.set(status.status);
           this.ownerSessionId.set(ownerSessionId);
+          this.setParticipants(sessions.participants, ownerSessionId);
+          this.status.set(status.status);
           this.lastUpdatedAt.set(new Date());
           this.syncError.set(false);
           this.loading.set(false);
@@ -143,7 +143,7 @@ export class GroupOrderPageComponent implements OnInit, OnDestroy {
     }).pipe(
       tap({
         next: ({ sessions, status }) => {
-          this.participants.set(sessions.participants);
+          this.setParticipants(sessions.participants, this.ownerSessionId());
           this.status.set(status.status);
           this.lastUpdatedAt.set(new Date());
           this.syncError.set(false);
@@ -230,7 +230,7 @@ export class GroupOrderPageComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.isRemoving.set(false);
         this.guestToRemove.set(null);
-        this.participants.set(res.participants);
+        this.setParticipants(res.participants);
         this.toastService.success(`Removed ${guest.name} from group order`);
       },
       error: () => {
@@ -238,5 +238,19 @@ export class GroupOrderPageComponent implements OnInit, OnDestroy {
         this.guestToRemove.set(null);
       },
     });
+  }
+
+  private setParticipants(participants: Participant[], ownerId?: string): void {
+    const idToMatch = ownerId || this.ownerSessionId();
+    const unique = participants.filter((p, index, self) => {
+      if (p.type === 'Owner') {
+        const ownerIndex = self.findIndex((x) =>
+          x.type === 'Owner' && (idToMatch ? x.id === idToMatch : true)
+        );
+        return index === (ownerIndex >= 0 ? ownerIndex : self.findIndex((x) => x.type === 'Owner'));
+      }
+      return true;
+    });
+    this.participants.set(unique);
   }
 }
