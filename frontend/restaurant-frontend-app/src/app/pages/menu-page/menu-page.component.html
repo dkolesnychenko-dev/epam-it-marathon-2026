@@ -30,16 +30,24 @@
   <section class="content-sections">
     <div class="menu-section">
       <div class="filter-sort-bar">
-        <div class="category-buttons">
+        <nav class="category-buttons" aria-label="Dish categories">
+          <button
+            type="button"
+            (click)="onCategorySelected(null)"
+            [class.active]="selectedCategory === null"
+          >
+            All dishes
+          </button>
           @for (category of menuCategories; track category) {
             <button
+              type="button"
               (click)="onCategorySelected(category)"
               [class.active]="selectedCategory === category"
             >
               {{ menuCategoryLabels[category] }}
             </button>
           }
-        </div>
+        </nav>
 
         <div class="sort-dropdown">
           <label for="sortSelect">Sort by:</label>
