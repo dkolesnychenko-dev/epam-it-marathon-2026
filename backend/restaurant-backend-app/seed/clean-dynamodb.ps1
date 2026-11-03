@@ -42,8 +42,8 @@ if (-not $Force) {
 Write-Host "`n[1/2] Cleaning Cognito Users ($UserPoolName)..." -ForegroundColor Cyan
 
 try {
-    $poolListRaw = aws cognito-idp list-user-pools --max-results 60 --region $Region 2>&1 | Out-String
-    if ($LASTEXITCODE -eq 0) {
+    $poolListRaw = aws cognito-idp list-user-pools --max-results 60 --region $Region --output json 2>&1 | Out-String
+    if ($LASTEXITCODE -eq 0 -and $poolListRaw.Trim().StartsWith("{")) {
         $poolList = $poolListRaw | ConvertFrom-Json
         $pool = $poolList.UserPools | Where-Object { $_.Name -eq $UserPoolName } | Select-Object -First 1
 
@@ -51,8 +51,8 @@ try {
             $poolId = $pool.Id
             Write-Host "  Found User Pool '$UserPoolName' (ID: $poolId)" -ForegroundColor Gray
 
-            $usersRaw = aws cognito-idp list-users --user-pool-id $poolId --region $Region 2>&1 | Out-String
-            if ($LASTEXITCODE -eq 0) {
+            $usersRaw = aws cognito-idp list-users --user-pool-id $poolId --region $Region --output json 2>&1 | Out-String
+            if ($LASTEXITCODE -eq 0 -and $usersRaw.Trim().StartsWith("{")) {
                 $usersJson = $usersRaw | ConvertFrom-Json
                 $users = @($usersJson.Users)
 
@@ -60,8 +60,8 @@ try {
                     Write-Host "  Deleting $($users.Count) user(s) from Cognito..." -ForegroundColor Yellow
                     foreach ($u in $users) {
                         $username = $u.Username
-                        $email = ($u.Attributes | Where-Object { $_.Name -eq "email" } | Select-Object -ExpandProperty Value)
-                        aws cognito-idp admin-delete-user --user-pool-id $poolId --username $username --region $Region | Out-Null
+                        $email = ($u.Attributes | Where-Object { $_.Name -eq "email" } | Select-Object -ExpandProperty Value -ErrorAction SilentlyContinue)
+                        aws cognito-idp admin-delete-user --user-pool-id $poolId --username $username --region $Region --output json 2>&1 | Out-Null
                         Write-Host "    - Deleted: $username ($email)" -ForegroundColor Gray
                     }
                     Write-Host "  OK: All Cognito users deleted." -ForegroundColor Green
@@ -112,15 +112,54 @@ function Clear-Table {
 
     Write-Host "`n[*] Cleaning '$TableName'..." -ForegroundColor Yellow
 
-    $proj = ($KeyAttributes -join ", ")
-    $scanRaw = aws dynamodb scan --table-name $TableName --projection-expression $proj --region $TargetRegion 2>&1 | Out-String
+    # Always use ExpressionAttributeNames (safe for reserved words like "date")
+    # Write JSON to temp file — most reliable way on Windows PowerShell
+    $projParts = @()
+    $exprNames = [ordered]@{}
+    for ($i = 0; $i -lt $KeyAttributes.Count; $i++) {
+        $placeholder = "#k$i"
+        $projParts += $placeholder
+        $exprNames[$placeholder] = $KeyAttributes[$i]
+    }
+    $proj = $projParts -join ", "
+    $exprNamesJson = $exprNames | ConvertTo-Json -Compress
+
+    $exprFile = [System.IO.Path]::GetTempFileName()
+    $scanRaw = $null
+
+    try {
+        # Write ExpressionAttributeNames to file (avoids all quoting issues)
+        Set-Content -Path $exprFile -Value $exprNamesJson -Encoding ASCII -NoNewline
+
+        $oldEap = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+
+        $scanRaw = aws dynamodb scan `
+            --table-name $TableName `
+            --projection-expression $proj `
+            --expression-attribute-names "file://$exprFile" `
+            --region $TargetRegion `
+            --output json 2>&1 | Out-String
+
+        $ErrorActionPreference = $oldEap
+    }
+    finally {
+        if (Test-Path $exprFile) {
+            Remove-Item $exprFile -Force -ErrorAction SilentlyContinue
+        }
+    }
 
     if ($LASTEXITCODE -ne 0) {
         if ($scanRaw -match "ResourceNotFoundException") {
             Write-Host "  Table '$TableName' does not exist in $TargetRegion. Skipping." -ForegroundColor Gray
             return
         }
-        Write-Warning "  Scan error on '$TableName': $scanRaw"
+        Write-Warning "  Scan error on '$TableName': $($scanRaw.Trim())"
+        return
+    }
+
+    if (-not $scanRaw.Trim().StartsWith("{")) {
+        Write-Warning "  Unexpected non-JSON response for '$TableName': $($scanRaw.Trim())"
         return
     }
 
@@ -132,39 +171,49 @@ function Clear-Table {
         return
     }
 
-    Write-Host "  Found $($items.Count) item(s) to delete..." -ForegroundColor Yellow
+       Write-Host "  Found $($items.Count) item(s) to delete..." -ForegroundColor Yellow
 
     $batchSize = 25
     for ($i = 0; $i -lt $items.Count; $i += $batchSize) {
-        $end = [Math]::Min($i + $batchSize - 1, $items.Count - 1)
+        $end   = [Math]::Min($i + $batchSize - 1, $items.Count - 1)
         $chunk = $items[$i..$end]
 
-        $deleteRequests = @()
+        # Build JSON manually to avoid ConvertTo-Json hashtable key issues in Windows PowerShell 5.1
+        $requestItems = [System.Collections.Generic.List[string]]::new()
+
         foreach ($item in $chunk) {
-            $keyMap = @{}
+            $keyParts = [System.Collections.Generic.List[string]]::new()
+
             foreach ($k in $KeyAttributes) {
                 if ($item.PSObject.Properties[$k]) {
-                    $attrObj = $item.$k
-                    $typeName = $attrObj.PSObject.Properties.Name[0]
-                    $typeVal = $attrObj.$typeName
-                    $keyMap[$k] = @{ $typeName = $typeVal }
+                    $attrObj  = $item.$k
+                    $typeName = [string]$attrObj.PSObject.Properties.Name[0]
+                    $typeVal  = $attrObj.$typeName
+
+                    # Escape the value for JSON
+                    if ($null -eq $typeVal) { $typeVal = "" }
+                    $escapedVal = ($typeVal.ToString()) -replace '\\', '\\\\' -replace '"', '\"'
+                    $keyParts.Add(('"{0}":{{"{1}":"{2}"}}' -f $k, $typeName, $escapedVal))
                 }
             }
-            $deleteRequests += @{
-                DeleteRequest = @{
-                    Key = $keyMap
-                }
-            }
+
+            $keyJson = "{" + ($keyParts -join ",") + "}"
+            $requestItems.Add(('{"DeleteRequest":{"Key":' + $keyJson + '}}'))
         }
 
-        $payload = @{
-            $TableName = $deleteRequests
-        }
-
+        $jsonBody = ('{{"{0}":[{1}]}}' -f $TableName, ($requestItems -join ","))
         $tmpFile = [System.IO.Path]::GetTempFileName()
+
         try {
-            $payload | ConvertTo-Json -Depth 6 | Set-Content -Path $tmpFile -Encoding UTF8
-            aws dynamodb batch-write-item --request-items "file://$tmpFile" --region $TargetRegion 2>&1 | Out-Null
+            [System.IO.File]::WriteAllText($tmpFile, $jsonBody, [System.Text.UTF8Encoding]::new($false))
+
+            $oldEap = $ErrorActionPreference
+            $ErrorActionPreference = "Continue"
+            aws dynamodb batch-write-item `
+                --request-items "file://$tmpFile" `
+                --region $TargetRegion `
+                --output json 2>&1 | Out-Null
+            $ErrorActionPreference = $oldEap
         }
         finally {
             if (Test-Path $tmpFile) {
