@@ -29,6 +29,30 @@
   flex-wrap: wrap;
 }
 
+.card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.remove-guest-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: color.$neutral-900;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #d32f2f;
+  }
+}
+
 .title {
   margin: 0;
   font-size: 18px;

@@ -28,11 +28,11 @@ export class DishCardComponent {
   });
 
   readonly isUnavailable = computed(() => {
-    const state = this.dish().state.toLowerCase();
+    const state = (this.dish().state ?? '').toLowerCase().replace(/\s+/g, '');
 
     return (
-      state === DishState.OnStop.toLowerCase() ||
-      state === DishState.OutOfStock.toLowerCase()
+      state === DishState.OnStop.toLowerCase().replace(/\s+/g, '') ||
+      state === DishState.OutOfStock.toLowerCase().replace(/\s+/g, '')
     );
   });
 
