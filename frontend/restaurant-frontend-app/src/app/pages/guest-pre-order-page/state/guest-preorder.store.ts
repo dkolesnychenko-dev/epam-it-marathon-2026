@@ -278,8 +278,13 @@ export class GuestPreorderStore {
         try {
             await firstValueFrom(this.guestSessionsService.submit(sessionId, token));
             this.submitSuccess();
-        } catch {
-            this.cartError.set('Could not submit your pre-order. Please try again.');
+        } catch (error) {
+            const status = error instanceof HttpErrorResponse ? error.status : null;
+            if (status === 404 || status === 410) {
+                this.cartError.set('This group pre-order has already been submitted or closed.');
+            } else {
+                this.cartError.set('Could not submit your pre-order. Please try again.');
+            }
         } finally {
             this.cartBusy.set(false);
         }

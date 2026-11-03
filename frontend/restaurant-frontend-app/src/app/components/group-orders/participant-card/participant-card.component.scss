@@ -1,0 +1,171 @@
+@use 'app/shared/styles/abstracts/colors' as color;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px;
+  background-color: color.$neutral-0;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.remove-guest-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: color.$neutral-900;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #d32f2f;
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: color.$neutral-900;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.submitted {
+    background-color: #e6f7ec;
+    color: #0f7a37;
+  }
+
+  &.pending {
+    background-color: #fff4de;
+    color: #b77900;
+  }
+}
+
+.items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 4px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+
+  &.initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e6f7ec;
+    color: #0f7a37;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.item-details {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: color.$neutral-900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qty {
+  margin: 0;
+  font-size: 14px;
+  color: color.$neutral-600;
+  white-space: nowrap;
+}
+
+.price {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: color.$neutral-900;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.empty {
+  margin: 0;
+  padding: 8px 0;
+  font-size: 14px;
+  color: color.$neutral-400;
+}
+
+.subtotal-row {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.subtotal {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  color: color.$neutral-900;
+}

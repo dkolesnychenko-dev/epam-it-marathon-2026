@@ -1,17 +1,18 @@
 <#
 .SYNOPSIS
-    Directly seeds DynamoDB tables using the AWS CLI and batch JSON files.
+    Seeds DynamoDB tables directly using the AWS CLI and batch JSON files.
 .DESCRIPTION
-    Pushes Locations, Dishes, Tables, and Feedback into DynamoDB in eu-north-1.
+    Populates Locations, Dishes, Tables, Feedback, and Waiters in DynamoDB.
 .PARAMETER Region
     AWS Region (defaults to 'eu-north-1').
 .EXAMPLE
     .\seed-aws-cli.ps1
-    .\seed-aws-cli.ps1 -Region us-east-1
+    .\seed-aws-cli.ps1 -Region eu-north-1
 #>
 
 param(
-    [string]$Region = "eu-north-1"
+    [string]$Region = "eu-north-1",
+    [switch]$SeedUsers = $true
 )
 
 $ErrorActionPreference = "Stop"
@@ -35,18 +36,18 @@ function Write-Batch {
         return
     }
 
-    Write-Host "`n📦 Seeding $Name from $FileName..." -ForegroundColor Yellow
+    Write-Host "`n[+] Seeding $Name from $FileName..." -ForegroundColor Yellow
     $fileUri = "file://$filePath"
     
     try {
         $result = aws dynamodb batch-write-item --request-items $fileUri --region $Region | Out-String
-        Write-Host "  ✓ Success: $Name" -ForegroundColor Green
+        Write-Host "  OK: $Name" -ForegroundColor Green
         if ($result.Trim().Length -gt 0 -and $result -match "UnprocessedItems") {
             Write-Host "  Response: $result" -ForegroundColor Gray
         }
     }
     catch {
-        Write-Error "  ✗ Failed to batch write $Name : $_"
+        Write-Error "  FAILED to batch write $Name : $_"
     }
 }
 
@@ -59,11 +60,29 @@ Write-Batch -Name "Dishes" -FileName "batch-dishes.json"
 # 3. Tables
 Write-Batch -Name "Tables" -FileName "batch-tables.json"
 
-# 4. Feedbacks
+# 4. Feedback
 Write-Batch -Name "Feedback" -FileName "batch-feedbacks.json"
 
-Write-Host "`n🎉 DynamoDB Seeding finished!" -ForegroundColor Green
-Write-Host "You can verify the data in AWS Console or via:" -ForegroundColor Cyan
-Write-Host "  aws dynamodb scan --table-name Locations --region $Region" -ForegroundColor Gray
-Write-Host "  aws dynamodb scan --table-name Dishes --region $Region" -ForegroundColor Gray
+# 5. Waiters
+Write-Batch -Name "Waiters" -FileName "batch-waiters.json"
 
+Write-Host "`nDynamoDB Seeding finished!" -ForegroundColor Green
+
+if ($SeedUsers) {
+    $seedUsersScript = Join-Path $ScriptDir "seed-users.ps1"
+    if (Test-Path $seedUsersScript) {
+        try {
+            & $seedUsersScript -Region $Region
+        }
+        catch {
+            Write-Warning "User seeding encountered an error: $_"
+        }
+    }
+}
+
+Write-Host "`nYou can verify the data via:" -ForegroundColor Cyan
+Write-Host "  aws dynamodb scan --table-name Locations --region $Region --select COUNT" -ForegroundColor Gray
+Write-Host "  aws dynamodb scan --table-name Dishes --region $Region --select COUNT" -ForegroundColor Gray
+Write-Host "  aws dynamodb scan --table-name Tables --region $Region --select COUNT" -ForegroundColor Gray
+Write-Host "  aws dynamodb scan --table-name Feedback --region $Region --select COUNT" -ForegroundColor Gray
+Write-Host "  aws dynamodb scan --table-name Waiters --region $Region --select COUNT" -ForegroundColor Gray

@@ -14,10 +14,12 @@ export interface ToastData {
       @if (data.type === 'success') {
         <img src="assets/svg/check-circle.svg" alt="" class="toast-icon" />
       }
-      @if (data.title) {
-        <strong class="toast-title">{{ data.title }}</strong>
-      }
-      <span class="toast-message">{{ data.message }}</span>
+      <div class="toast-text">
+        @if (data.title) {
+          <strong class="toast-title">{{ data.title }}</strong>
+        }
+        <span class="toast-message">{{ data.message }}</span>
+      </div>
     </div>
     <button class="toast-close" (click)="snackBarRef.dismiss()">✕</button>
   `,

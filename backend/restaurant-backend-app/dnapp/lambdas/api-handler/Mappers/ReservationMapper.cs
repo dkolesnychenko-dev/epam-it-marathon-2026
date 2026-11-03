@@ -36,7 +36,7 @@ public static class ReservationMapper
         Address = address,
         RestaurantName = restaurantName,
         CustomerId = reservation.CustomerId, // for waiter dashboard
-        HasSubmittedPreOrder = order is not null && order.Status == OrderStatus.Submitted,
+        HasSubmittedPreOrder = order is not null && (order.Status == OrderStatus.Submitted || order.Status == OrderStatus.SubmittedByCustomer),
         GuestInviteLinkAvailable = guestInviteLinkAvailable,
     };
 }

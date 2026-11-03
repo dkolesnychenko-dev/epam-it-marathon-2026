@@ -11,7 +11,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { Params, Router } from '@angular/router';
 import { Reservation } from '@app/models/reservations/reservation.model';
 import { GuestInviteService } from '@app/services/reservation/guest-invite.service';
 import { ToastService } from '@app/services/toast/toast.service';
@@ -104,8 +104,35 @@ export class ReservationInviteModalComponent implements OnInit {
     this.router.navigate(['/reservations']);
   }
 
+  private getTableLabel(): string {
+    const tableId = this.reservation().tableId;
+    if (tableId) {
+      const match = tableId.match(/^t\d+(\d{2})-/i);
+      if (match) {
+        return `Table ${parseInt(match[1], 10)}`;
+      }
+    }
+    return `Table ${tableId}`;
+  }
+
   onMakePreOrder(): void {
+    const reservation = this.reservation();
+    const startTime = new Date(reservation.startTime);
+    const endTime = new Date(reservation.endTime);
+    const tableLabel = this.getTableLabel();
+
+    const queryParams: Params = {
+      preOrder: 'true',
+      reservationId: reservation.id,
+      reservationLabel: [
+        reservation.locationAddress,
+        tableLabel,
+        startTime.toDateString(),
+        `${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`,
+      ].join(', '),
+    };
+
     this.closed.emit();
-    this.router.navigate(['/menu']);
+    void this.router.navigate(['/menu'], { queryParams });
   }
 }

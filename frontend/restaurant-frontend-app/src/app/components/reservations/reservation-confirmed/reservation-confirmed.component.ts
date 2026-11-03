@@ -2,6 +2,7 @@ import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   output,
   signal,
@@ -36,6 +37,17 @@ export class ReservationConfirmedComponent {
   readonly cancelReservation = output<void>();
 
   readonly isFading = signal(false);
+
+  readonly tableLabel = computed(() => {
+    const tableId = this.reservation().tableId;
+    if (tableId) {
+      const match = tableId.match(/^t\d+(\d{2})-/i);
+      if (match) {
+        return `Table ${parseInt(match[1], 10)}`;
+      }
+    }
+    return `Table ${tableId}`;
+  });
 
   protected readonly ReservationStatus = ReservationStatus;
 

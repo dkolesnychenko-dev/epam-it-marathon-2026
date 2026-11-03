@@ -1,6 +1,6 @@
-# Restaurant System — Database Seeding Guide
+# Restaurant System — Database Seeding & Reset Guide
 
-This directory contains seed data and automated tools to populate the DynamoDB database and REST API for the Restaurant management application.
+This directory contains seed data, automated tools, and cleanup scripts to populate and manage the DynamoDB database and Cognito users for the Restaurant management application.
 
 ---
 
@@ -32,25 +32,52 @@ DynamoDB Table: **`Locations`** (Hash Key: `id`, String).
 ### 🥗 1.2 Dishes (`Dish`)
 DynamoDB Table: **`Dishes`** (Hash Key: `id`, String).
 
-| Field | C# Type | DynamoDB Type | REST API (`POST /dishes`) | Description |
-|---|---|---|---|---|
-| `id` | `string` | `S` | (auto-generated) | Unique dish GUID |
-| `name` | `string` | `S` | `string` | Dish title |
-| `description` | `string` | `S` | `string` | Ingredients and culinary description |
-| `dishType` | `DishType` (Enum) | **`N` (Integer)** | `string` | `0` = `"Appetizer"`, `1` = `"MainCourse"`, `2` = `"Dessert"` |
-| `price` | `decimal` | `N` | `number` | Price in USD (e.g., `16.50`) |
-| `weight` | `string` | `S` | `string` | Serving weight (e.g., `"320g"`) |
-| `calories` | `string` | `S` | `string` | Energy value (e.g., `"410"`) |
-| `proteins` | `string` | `S` | `string` | Protein content (e.g., `"9g"`) |
-| `fats` | `string` | `S` | `string` | Fat content (e.g., `"28g"`) |
-| `carbohydrates` | `string` | `S` | `string` | Carbohydrate content (e.g., `"32g"`) |
-| `vitamins` | `string` | `S` | `string` | Vitamins & minerals (e.g., `"A, B6, C, E, K"`) |
-| `imageUrl` | `string?` | `S` | `imageBase64` / path | Relative asset path or public S3 URL |
-| `state` | `DishState` (Enum) | **`N` (Integer)** | `string` | `0` = `"OnStop"`, `1` = `"Available"`, `2` = `"OutOfStock"` |
-| `locationId` | `string` | `S` | `locationIds: [...]` | Primary restaurant location ID |
+| Field | C# Type | DynamoDB Type | Description |
+|---|---|---|---|
+| `id` | `string` | `S` | Unique dish GUID |
+| `name` | `string` | `S` | Dish title |
+| `description` | `string` | `S` | Ingredients and culinary description |
+| `dishType` | `DishType` (Enum) | **`N` (Integer)** | `0` = `"Appetizer"`, `1` = `"MainCourse"`, `2` = `"Dessert"` |
+| `price` | `decimal` | `N` | Price in USD (e.g., `16.50`) |
+| `weight` | `string` | `S` | Serving weight (e.g., `"320g"`) |
+| `calories` | `string` | `S` | Energy value (e.g., `"410"`) |
+| `proteins` | `string` | `S` | Protein content (e.g., `"9g"`) |
+| `fats` | `string` | `S` | Fat content (e.g., `"28g"`) |
+| `carbohydrates` | `string` | `S` | Carbohydrate content (e.g., `"32g"`) |
+| `vitamins` | `string` | `S` | Vitamins & minerals (e.g., `"A, B6, C, E, K"`) |
+| `imageUrl` | `string?` | `S` | Relative asset path or public S3 URL |
+| `state` | `DishState` (Enum) | **`N` (Integer)** | `0` = `"OnStop"`, `1` = `"Available"`, `2` = `"OutOfStock"` |
+| `locationId` | `string` | `S` | Primary restaurant location ID |
 
-> ⚠️ **DynamoDB Enum Storage**:
-> In `Dish.cs`, `DishType` and `State` use `EnumAsIntConverter`. When saving directly into DynamoDB, they **must be numbers** (`{"N": "0"}`), whereas the REST API (`POST /dishes`) accepts string names (`"Appetizer"`, `"Available"`). The provided batch JSON files and scripts handle this conversion automatically.
+---
+
+### 🧑‍🍳 1.3 Waiters (`WaiterListItem`)
+DynamoDB Table: **`Waiters`** (Hash Key: `userId`, String).
+Global Secondary Index: **`locationId-index`** (Partition Key: `locationId`, String).
+
+| Field | DynamoDB Type | Description |
+|---|---|---|
+| `userId` | `S` | Waiter unique identifier (GUID) |
+| `locationId` | `S` | Restaurant location ID where the waiter works (GSI) |
+| `createdAt` | `S` | ISO8601 creation timestamp |
+| `reservations` | `L` | Array of reservation IDs assigned to this waiter |
+
+> ⚠️ **Why Waiters are Required for Reservations**:
+> When any customer creates a reservation (`POST /reservations`), the backend queries the `Waiters` table using the `locationId-index` GSI to find the least busy waiter (`GetLeastBusyWaiterAsync`). If no waiters are registered for that location, the reservation is rejected with:
+> `ValidationException: "No waiters found for location ID <locationId>."`
+> The seeder assigns 2 waiters for each of the 3 restaurant branches with an empty `reservations: []` list.
+
+---
+
+### 👤 1.4 Test Accounts (`data/users.json`)
+Pre-configured test accounts ready for login and role verification:
+
+| Role | Email | Password | Name | Assigned Location | Notes |
+|---|---|---|---|---|---|
+| **Customer** | `customer@greentasty.com` | `Password123!` | John Doe | — | Book tables, group pre-orders, leave feedback |
+| **Waiter** | `waiter@greentasty.com` | `Password123!` | David Beridze | 9 Irakli Abashidze St (`1111...`) | Waiter Dashboard, menu, table pre-orders |
+| **Waiter** | `waiter.rustaveli@greentasty.com` | `Password123!` | Luka Shengelia | 48 Shota Rustaveli Ave (`3333...`) | Waiter Dashboard for Rustaveli branch |
+| **Admin** | `admin@greentasty.com` | `Password123!` | Admin Manager | — | Access to `/reports` analytics |
 
 ---
 
@@ -102,8 +129,7 @@ aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/assets/i
 
 ## 🚀 3. How to Push Seed Data
 
-### Method 1: Direct DynamoDB Batch Seeding (PowerShell / AWS CLI)
-Writes Locations, Dishes, Tables, and Feedback directly to DynamoDB in batches. It takes under 3 seconds and does not require an active API Gateway.
+Writes Locations, Dishes, Tables, Feedback, and Waiters directly to DynamoDB in batches. It takes under 3 seconds and ensures all 3 restaurant branches have tables and waiters ready for reservations.
 
 Ensure AWS CLI is configured (`aws configure`).
 
@@ -114,53 +140,45 @@ Ensure AWS CLI is configured (`aws configure`).
 
 ---
 
-### Method 2: Seeding via REST API Gateway (Node.js)
-Sends HTTP `POST` requests through the deployed AWS API Gateway (`/locations`, `/dishes`, `/tables`), invoking the Lambda functions and verifying backend validation rules.
+## 🧹 4. Complete Database & User Pool Reset
 
-#### Where does the API URL come from?
-The API Gateway base URL is created during backend deployment. You can find it:
-1. In the console output immediately after running `syndicate deploy`.
-2. In `frontend/restaurant-frontend-app/src/environments/environment.development.ts` under `backendUrl`.
-3. In AWS Console: **API Gateway** -> select `restaurant-backend-api` -> **Stages** -> `develop` (field **Invoke URL**).
+When you want to reset everything back to a clean slate, use `clean-dynamodb.ps1`.
 
-#### Running the Script:
-The script `seed-api.mjs` runs on Node.js (v18+ or v24+) with zero external dependencies (uses native `fetch`):
+It completely wipes:
+1. **Cognito Users**: Deletes all registered users from `restaurant-backend-user-pool`.
+2. **All DynamoDB Tables**:
+   - `Reservations`, `GroupReservations`, `GuestSessions`, `Orders`, `Notifications`, `Reports`, `ReportsHistory`
+   - `Waiters`, `Feedback`, `Tables`, `Dishes`, `Locations`, `ProfileImages`
 
 ```powershell
 # Run from backend\restaurant-backend-app\seed:
-node seed-api.mjs <YOUR_API_BASE_URL>
+.\clean-dynamodb.ps1
 ```
 
-Example:
+To skip the interactive confirmation prompt:
 ```powershell
-node seed-api.mjs https://YOUR_API_ID.execute-api.eu-north-1.amazonaws.com/develop
+.\clean-dynamodb.ps1 -Force
 ```
 
-You can also pass it via environment variable:
-```powershell
-$env:API_BASE_URL = "https://YOUR_API_ID.execute-api.eu-north-1.amazonaws.com/develop"
-node seed-api.mjs
-```
+After cleaning, run `.\seed-aws-cli.ps1` to re-populate the database.
 
 ---
 
-## 🔍 4. Verification
+## 🔍 5. Verification
 
-### 1. Verify via AWS CLI
+Verify the seeded records directly via AWS CLI:
+
 ```powershell
 aws dynamodb scan --table-name Locations --region eu-north-1 --select COUNT
 aws dynamodb scan --table-name Dishes --region eu-north-1 --select COUNT
 aws dynamodb scan --table-name Tables --region eu-north-1 --select COUNT
 aws dynamodb scan --table-name Feedback --region eu-north-1 --select COUNT
+aws dynamodb scan --table-name Waiters --region eu-north-1 --select COUNT
 ```
 
-### 2. Verify via Frontend
-Start the Angular application:
-```powershell
-cd ..\..\..\frontend\restaurant-frontend-app
-npm start
-```
-Navigate to `http://localhost:4200` to inspect:
-* Restaurant cards on the landing page with addresses, ratings, and table counts.
-* The location detail page with customer reviews.
-* The menu page with categorized appetizers, main courses, and desserts.
+Expected record counts:
+- `Locations`: 3
+- `Dishes`: 24
+- `Tables`: 18
+- `Feedback`: 12
+- `Waiters`: 6 (2 per location)

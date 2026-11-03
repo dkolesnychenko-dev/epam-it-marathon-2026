@@ -1,7 +1,7 @@
 <div class="submitted-order-item">
   <div class="text">
     <span class="body-bold">
-      Pre-order #{{ order().orderId }}
+      Pre-order #{{ order().orderId.slice(0, 8) }}
       ({{ order().reservationAddress }}, {{ order().reservationTime }})
     </span>
 
@@ -11,12 +11,6 @@
     {{ item.quantity }}× {{ item.dish.name }}
 
     @switch (item.state) {
-    @case (0) {
-    <span class="body status-pending">
-      (Pending)
-    </span>
-    }
-
     @case (1) {
     <span class="body status-confirmed">
       (Confirmed)
@@ -30,8 +24,8 @@
     }
 
     @default {
-    <span class="body status-unknown">
-      (Unknown)
+    <span class="body status-pending">
+      (Pending)
     </span>
     }
     }

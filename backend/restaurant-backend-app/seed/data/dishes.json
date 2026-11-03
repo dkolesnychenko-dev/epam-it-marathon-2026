@@ -5,7 +5,7 @@
     "description": "Nutrient-packed bowl with fresh hass avocado, toasted cedar pine nuts, organic quinoa, mixed greens, and citrus-tahini dressing.",
     "dishType": "Appetizer",
     "dishTypeInt": 0,
-    "price": 16.50,
+    "price": 16.5,
     "weight": "320g",
     "calories": "410",
     "proteins": "9g",
@@ -15,7 +15,11 @@
     "imageUrl": "assets/img/dishes/avocado-pine-nut-bowl.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "a2222222-2222-2222-2222-222222222222",
@@ -23,7 +27,7 @@
     "description": "Sweet local strawberries paired with crisp baby spinach, fragrant mint leaves, creamy goat cheese crumbles, and aged balsamic glaze.",
     "dishType": "Appetizer",
     "dishTypeInt": 0,
-    "price": 14.00,
+    "price": 14,
     "weight": "260g",
     "calories": "240",
     "proteins": "5g",
@@ -33,7 +37,11 @@
     "imageUrl": "assets/img/dishes/fresh-strawberry-mint-salad.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "a3333333-3333-3333-3333-333333333333",
@@ -41,7 +49,7 @@
     "description": "Caramelized sweet potato cubes, French Puy lentils, wild arugula, toasted pumpkin seeds, and warm Dijon mustard vinaigrette.",
     "dishType": "Appetizer",
     "dishTypeInt": 0,
-    "price": 15.50,
+    "price": 15.5,
     "weight": "340g",
     "calories": "380",
     "proteins": "14g",
@@ -49,9 +57,12 @@
     "carbohydrates": "54g",
     "vitamins": "A, B complex, Iron",
     "imageUrl": "assets/img/dishes/roasted-sweet-potato-and-lentil-salad.jpg",
-    "state": "Available",
-    "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222"]
+    "state": "OutOfStock",
+    "stateInt": 2,
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222"
+    ]
   },
   {
     "id": "a4444444-4444-4444-4444-444444444444",
@@ -59,7 +70,7 @@
     "description": "Vibrant garden salad with crunchy baby cucumbers, heirloom radishes, young greens, fresh dill, and cold-pressed extra virgin olive oil.",
     "dishType": "Appetizer",
     "dishTypeInt": 0,
-    "price": 12.50,
+    "price": 12.5,
     "weight": "250g",
     "calories": "180",
     "proteins": "4g",
@@ -67,9 +78,13 @@
     "carbohydrates": "19g",
     "vitamins": "A, C, K, Iron",
     "imageUrl": "assets/img/dishes/spring-salad.jpg",
-    "state": "Available",
-    "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "state": "OnStop",
+    "stateInt": 0,
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "a5555555-5555-5555-5555-555555555555",
@@ -77,7 +92,7 @@
     "description": "Toasted sourdough slices topped with classic tomato-basil concassé, wild mushroom tapenade, and whipped ricotta with honey.",
     "dishType": "Appetizer",
     "dishTypeInt": 0,
-    "price": 13.00,
+    "price": 13,
     "weight": "220g",
     "calories": "290",
     "proteins": "7g",
@@ -87,7 +102,10 @@
     "imageUrl": "assets/img/dishes/bruschetta-trio.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "a6666666-6666-6666-6666-666666666666",
@@ -95,7 +113,7 @@
     "description": "Fresh Pugliese burrata filled with truffle cream, surrounded by colorful heirloom cherry tomatoes, basil oil, and fleur de sel.",
     "dishType": "Appetizer",
     "dishTypeInt": 0,
-    "price": 17.50,
+    "price": 17.5,
     "weight": "280g",
     "calories": "430",
     "proteins": "18g",
@@ -105,7 +123,11 @@
     "imageUrl": "assets/img/dishes/truffle-burrata.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "a7777777-7777-7777-7777-777777777777",
@@ -113,7 +135,7 @@
     "description": "Tender squid rings lightly dusted in semolina and flash-fried to golden perfection, served with spicy marinara and lemon garlic aioli.",
     "dishType": "Appetizer",
     "dishTypeInt": 0,
-    "price": 16.00,
+    "price": 16,
     "weight": "270g",
     "calories": "390",
     "proteins": "24g",
@@ -123,7 +145,10 @@
     "imageUrl": "assets/img/dishes/crispy-calamari.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "a8888888-8888-8888-8888-888888888888",
@@ -131,7 +156,7 @@
     "description": "Smooth butternut squash and roasted pumpkin velouté infused with ginger, coconut cream, and topped with toasted spicy seeds.",
     "dishType": "Appetizer",
     "dishTypeInt": 0,
-    "price": 11.50,
+    "price": 11.5,
     "weight": "300g",
     "calories": "210",
     "proteins": "4g",
@@ -141,7 +166,10 @@
     "imageUrl": "assets/img/dishes/pumpkin-soup.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222"
+    ]
   },
   {
     "id": "b1111111-1111-1111-1111-111111111111",
@@ -149,7 +177,7 @@
     "description": "Pan-seared Atlantic salmon fillet served with grilled green asparagus spears, roasted baby potatoes, and a velvety lemon-herb butter sauce.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 26.00,
+    "price": 26,
     "weight": "380g",
     "calories": "560",
     "proteins": "42g",
@@ -159,7 +187,11 @@
     "imageUrl": "assets/img/dishes/grilled-salmon.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "b2222222-2222-2222-2222-222222222222",
@@ -167,7 +199,7 @@
     "description": "Black Angus ribeye steak grilled over charcoal to your liking, crowned with roasted garlic compound butter and truffle fries.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 34.00,
+    "price": 34,
     "weight": "420g",
     "calories": "750",
     "proteins": "56g",
@@ -177,7 +209,10 @@
     "imageUrl": "assets/img/dishes/ribeye-steak.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "b3333333-3333-3333-3333-333333333333",
@@ -185,7 +220,7 @@
     "description": "Slow-cooked Italian Carnaroli rice infused with porcini and chanterelle mushrooms, finished with 24-month aged Parmigiano Reggiano.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 21.00,
+    "price": 21,
     "weight": "350g",
     "calories": "490",
     "proteins": "12g",
@@ -195,7 +230,10 @@
     "imageUrl": "assets/img/dishes/wild-mushroom-risotto.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "b4444444-4444-4444-4444-444444444444",
@@ -203,7 +241,7 @@
     "description": "Crispy skinned French Barbarie duck breast paired with sweet sour Morello cherry reduction, parsnip puree, and braised red cabbage.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 29.50,
+    "price": 29.5,
     "weight": "360g",
     "calories": "620",
     "proteins": "38g",
@@ -211,9 +249,12 @@
     "carbohydrates": "28g",
     "vitamins": "Iron, B6, Niacin",
     "imageUrl": "assets/img/dishes/duck-breast.jpg",
-    "state": "Available",
-    "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222"]
+    "state": "OutOfStock",
+    "stateInt": 2,
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222"
+    ]
   },
   {
     "id": "b5555555-5555-5555-5555-555555555555",
@@ -221,7 +262,7 @@
     "description": "Fresh handcrafted egg tagliatelle tossed in cultured Normandy butter, shaved Norcia black winter truffle, and aged cheese sauce.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 24.00,
+    "price": 24,
     "weight": "330g",
     "calories": "580",
     "proteins": "19g",
@@ -231,7 +272,10 @@
     "imageUrl": "assets/img/dishes/truffle-pasta.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "b6666666-6666-6666-6666-666666666666",
@@ -239,7 +283,7 @@
     "description": "Jumbo tiger prawns sautéed in extra virgin olive oil, white wine, garlic, fresh parsley, and crushed chili flakes over linguine.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 25.00,
+    "price": 25,
     "weight": "370g",
     "calories": "510",
     "proteins": "36g",
@@ -249,7 +293,10 @@
     "imageUrl": "assets/img/dishes/shrimp-scampi.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "b7777777-7777-7777-7777-777777777777",
@@ -257,7 +304,7 @@
     "description": "Tender roasted lamb chops coated in rosemary-thyme breadcrumb crust, served with ratatouille and rich mint red-wine jus.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 36.00,
+    "price": 36,
     "weight": "400g",
     "calories": "720",
     "proteins": "48g",
@@ -265,9 +312,12 @@
     "carbohydrates": "18g",
     "vitamins": "B12, Zinc, Iron",
     "imageUrl": "assets/img/dishes/lamb-chops.jpg",
-    "state": "Available",
-    "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "33333333-3333-3333-3333-333333333333"]
+    "state": "OnStop",
+    "stateInt": 0,
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "b8888888-8888-8888-8888-888888888888",
@@ -275,7 +325,7 @@
     "description": "Crispy panko-breaded chicken breast smothered in San Marzano tomato sauce, fresh melted mozzarella, and fragrant basil.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 20.50,
+    "price": 20.5,
     "weight": "390g",
     "calories": "630",
     "proteins": "52g",
@@ -285,7 +335,11 @@
     "imageUrl": "assets/img/dishes/chicken-parmigiana.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "b9999999-9999-9999-9999-999999999999",
@@ -293,7 +347,7 @@
     "description": "Saffron bomba rice cooked with mussels, calamari, prawns, and Spanish bell peppers, featuring the coveted crispy socarrat base.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 28.00,
+    "price": 28,
     "weight": "450g",
     "calories": "670",
     "proteins": "41g",
@@ -303,7 +357,10 @@
     "imageUrl": "assets/img/dishes/seafood-paella.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "baaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
@@ -311,7 +368,7 @@
     "description": "Layers of tender grilled aubergine, rich marinara sauce, aged Parmesan, and fresh fior di latte mozzarella, baked until bubbling.",
     "dishType": "MainCourse",
     "dishTypeInt": 1,
-    "price": 18.00,
+    "price": 18,
     "weight": "340g",
     "calories": "420",
     "proteins": "17g",
@@ -321,7 +378,10 @@
     "imageUrl": "assets/img/dishes/eggplant-parmigiana.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222"
+    ]
   },
   {
     "id": "c1111111-1111-1111-1111-111111111111",
@@ -329,7 +389,7 @@
     "description": "Traditional Venetian dessert layered with espresso-soaked savoiardi ladyfingers, rich mascarpone cream, and Dutch cocoa powder.",
     "dishType": "Dessert",
     "dishTypeInt": 2,
-    "price": 9.50,
+    "price": 9.5,
     "weight": "180g",
     "calories": "390",
     "proteins": "7g",
@@ -337,9 +397,13 @@
     "carbohydrates": "41g",
     "vitamins": "A, Calcium",
     "imageUrl": "assets/img/dishes/classic-tiramisu.jpg",
-    "state": "Available",
+    "state": "OutOfStock",
     "stateInt": 2,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "c2222222-2222-2222-2222-222222222222",
@@ -347,7 +411,7 @@
     "description": "Decadent Belgian 70% dark chocolate cake with a flowing molten core, served with a scoop of artisanal bourbon vanilla bean gelato.",
     "dishType": "Dessert",
     "dishTypeInt": 2,
-    "price": 11.00,
+    "price": 11,
     "weight": "210g",
     "calories": "460",
     "proteins": "6g",
@@ -357,7 +421,10 @@
     "imageUrl": "assets/img/dishes/chocolate-lava-cake.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "c3333333-3333-3333-3333-333333333333",
@@ -365,7 +432,7 @@
     "description": "Silky smooth vanilla cream dessert topped with a vibrant raspberry-blackberry coulis and crystallized mint leaves.",
     "dishType": "Dessert",
     "dishTypeInt": 2,
-    "price": 8.50,
+    "price": 8.5,
     "weight": "170g",
     "calories": "290",
     "proteins": "5g",
@@ -375,7 +442,10 @@
     "imageUrl": "assets/img/dishes/berry-panna-cotta.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "c4444444-4444-4444-4444-444444444444",
@@ -383,7 +453,7 @@
     "description": "Ultra-creamy Philadelphia cream cheese filling on buttery graham cracker crust, finished with passion fruit purée glaze.",
     "dishType": "Dessert",
     "dishTypeInt": 2,
-    "price": 10.00,
+    "price": 10,
     "weight": "190g",
     "calories": "440",
     "proteins": "8g",
@@ -393,7 +463,10 @@
     "imageUrl": "assets/img/dishes/new-york-cheesecake.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "22222222-2222-2222-2222-222222222222"
+    ]
   },
   {
     "id": "c5555555-5555-5555-5555-555555555555",
@@ -401,7 +474,7 @@
     "description": "Crispy golden layers of handmade phyllo dough packed with crushed Antep pistachios and scented with orange blossom honey syrup.",
     "dishType": "Dessert",
     "dishTypeInt": 2,
-    "price": 9.00,
+    "price": 9,
     "weight": "150g",
     "calories": "370",
     "proteins": "6g",
@@ -409,9 +482,12 @@
     "carbohydrates": "40g",
     "vitamins": "E, Copper, Manganese",
     "imageUrl": "assets/img/dishes/pistachio-baklava.jpg",
-    "state": "Available",
-    "stateInt": 1,
-    "locationIds": ["22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333"]
+    "state": "OnStop",
+    "stateInt": 0,
+    "locationIds": [
+      "22222222-2222-2222-2222-222222222222",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   },
   {
     "id": "c6666666-6666-6666-6666-666666666666",
@@ -419,7 +495,7 @@
     "description": "Crisp sweet pastry crust filled with tangy Meyer lemon curd, crowned with lightly torched Italian meringue peaks.",
     "dishType": "Dessert",
     "dishTypeInt": 2,
-    "price": 8.50,
+    "price": 8.5,
     "weight": "160g",
     "calories": "310",
     "proteins": "5g",
@@ -429,6 +505,9 @@
     "imageUrl": "assets/img/dishes/lemon-tart.jpg",
     "state": "Available",
     "stateInt": 1,
-    "locationIds": ["11111111-1111-1111-1111-111111111111", "33333333-3333-3333-3333-333333333333"]
+    "locationIds": [
+      "11111111-1111-1111-1111-111111111111",
+      "33333333-3333-3333-3333-333333333333"
+    ]
   }
 ]

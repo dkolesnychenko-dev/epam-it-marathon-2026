@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
+﻿import {Component, OnInit, ChangeDetectionStrategy, inject} from '@angular/core';
 import { DishCardComponent } from '@app/shared/custom-components/dish-card/dish-card.component';
 import { DishesService } from '@app/services/dishes/dishes.service';
 import { DishListResponse } from '@app/models/dishes/dish-list-response.model';
@@ -99,8 +99,8 @@ export class MenuPageComponent implements OnInit {
     });
   }
 
-  onCategorySelected(category: DishType): void {
-    this.selectedCategory = this.selectedCategory === category ? null : category;
+  onCategorySelected(category: DishType | null): void {
+    this.selectedCategory = category;
 
     this.router.navigate([], {
       relativeTo: this.route,

@@ -11,6 +11,7 @@ import {
 import { Params, Router } from '@angular/router';
 
 import { CreateOrderRequest } from '@app/models/cart/create-order-request.model';
+import { PreOrdersService } from '@app/services/pre-orders/pre-orders.service';
 import {
   ReservationCustomer,
   ReservationStatusCustomer,
@@ -45,6 +46,7 @@ interface WaiterPreOrderNavigationData {
 })
 export class CardReservationComponent {
   private readonly router = inject(Router);
+  private readonly preOrdersService = inject(PreOrdersService, { optional: true });
   readonly Roles = Roles;
   readonly ReservationStatusCustomer = ReservationStatusCustomer;
 
@@ -129,6 +131,13 @@ export class CardReservationComponent {
     return this.r().preOrder?.orderItems?.length ?? 0;
   });
 
+  readonly hasPreOrder = computed(() => {
+    return (
+      this.r().hasSubmittedPreOrder === true ||
+      this.preOrderItemCount() > 0
+    );
+  });
+
   readonly canOpenWaiterPreOrder = computed(() => {
     return (
       this.preOrderItemCount() > 0 ||
@@ -149,14 +158,33 @@ export class CardReservationComponent {
     );
   });
 
+  private getTableLabel(): string {
+    const reservation = this.r();
+    if (reservation.tableName && reservation.tableName.trim()) {
+      return reservation.tableName.startsWith('Table')
+        ? reservation.tableName
+        : `Table ${reservation.tableName}`;
+    }
+    const tableId = reservation.tableId;
+    if (tableId) {
+      const match = tableId.match(/^t\d+(\d{2})-/i);
+      if (match) {
+        return `Table ${parseInt(match[1], 10)}`;
+      }
+    }
+    return `Table ${tableId}`;
+  }
+
+  onGroupPreOrder(): void {
+    void this.router.navigate(['/reservations', this.r().id, 'group-order']);
+  }
+
   onPreOrder(): void {
     const reservation = this.r();
     const startTime = new Date(reservation.startTime);
     const endTime = new Date(reservation.endTime);
 
-    const tableLabel =
-      reservation.tableName ||
-      `Table ${reservation.tableId}`;
+    const tableLabel = this.getTableLabel();
 
     const queryParams: Params = {
       preOrder: 'true',
@@ -168,6 +196,24 @@ export class CardReservationComponent {
         `${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`,
       ].join(', '),
     };
+
+    const isSubmitted =
+      reservation.hasSubmittedPreOrder === true ||
+      (reservation.preOrder != null &&
+        (reservation.preOrder.status === 1 || reservation.preOrder.status === 3));
+
+    if (isSubmitted && this.preOrdersService) {
+      this.preOrdersService.unsubmitPreOrderByReservationId(reservation.id).subscribe({
+        next: () => {
+          void this.router.navigate(['/menu'], { queryParams });
+        },
+        error: (err) => {
+          console.error('Error unsubmitting pre-order for editing:', err);
+          void this.router.navigate(['/menu'], { queryParams });
+        },
+      });
+      return;
+    }
 
     void this.router.navigate(['/menu'], {
       queryParams,

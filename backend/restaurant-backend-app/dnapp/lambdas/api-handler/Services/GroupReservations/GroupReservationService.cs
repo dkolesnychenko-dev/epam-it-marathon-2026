@@ -43,7 +43,7 @@ public class GroupReservationService(
         Reservation reservation = await reservationTask ?? throw new ValidationException("Associated reservation not found.");
         int joinedGuestsCount = await countTask;
 
-        if (joinedGuestsCount + 1 >= reservation.GuestCount)
+        if (joinedGuestsCount >= reservation.GuestCount)
             throw new GuestLimitExceededException();
 
         Table table = await tableRepository.GetTableAsync(reservation.TableId)
@@ -188,8 +188,15 @@ public class GroupReservationService(
             ?? throw new ValidationException($"Order for reservation '{reservationId}' was not found.");
 
         var sessions = await guestSessionRepository.GetAllByGroupReservationIdAsync(groupReservationId);
-        var submittedSessions = sessions.Where(s => s.IsSubmitted).ToList();
-        if (submittedSessions.Count == 0)
+
+        var unsubmittedSessions = sessions.Where(s => !s.IsOwnerSession && !s.IsSubmitted).ToList();
+        foreach (var unsubmitted in unsubmittedSessions)
+        {
+            await guestSessionRepository.DeleteAsync(unsubmitted);
+        }
+
+        var submittedSessions = sessions.Where(s => !s.IsOwnerSession && s.IsSubmitted).ToList();
+        if (submittedSessions.Count == 0 && (order.Dishes == null || order.Dishes.Count == 0))
         {
             throw new ValidationException("There are no submitted guest sessions.");
         }
@@ -202,7 +209,7 @@ public class GroupReservationService(
             .Where(d => d.Quantity > 0)
             .ToList();
 
-        if (aggregatedDishes.Count == 0)
+        if (aggregatedDishes.Count == 0 && (order.Dishes == null || order.Dishes.Count == 0))
         {
             throw new ValidationException("Submitted guest sessions contain no dishes.");
         }
