@@ -142,3 +142,11 @@ syndicate build
 ```powershell
 syndicate deploy
 ```
+
+### 5.4 Update API Gateway Integrations
+
+If API Gateway endpoints remain as Mock integrations after initial creation or after changing Lambda routes/handlers, run `update` to automatically link all endpoints to the deployed Lambda functions and redeploy the stage:
+
+```powershell
+syndicate update --deploy_name dev
+```

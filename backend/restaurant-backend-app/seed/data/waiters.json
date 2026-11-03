@@ -1,0 +1,45 @@
+[
+  {
+    "userId": "f1111111-1111-1111-1111-111111111111",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "name": "David Beridze",
+    "createdAt": "2026-11-01T10:00:00.000Z",
+    "reservations": []
+  },
+  {
+    "userId": "f1111111-2222-2222-2222-222222222222",
+    "locationId": "11111111-1111-1111-1111-111111111111",
+    "name": "Nino Kapanadze",
+    "createdAt": "2026-11-01T10:00:00.000Z",
+    "reservations": []
+  },
+  {
+    "userId": "f2222222-1111-1111-1111-111111111111",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "name": "Giorgi Maisuradze",
+    "createdAt": "2026-11-01T10:00:00.000Z",
+    "reservations": []
+  },
+  {
+    "userId": "f2222222-2222-2222-2222-222222222222",
+    "locationId": "22222222-2222-2222-2222-222222222222",
+    "name": "Salome Gelashvili",
+    "createdAt": "2026-11-01T10:00:00.000Z",
+    "reservations": []
+  },
+  {
+    "userId": "f3333333-1111-1111-1111-111111111111",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "name": "Luka Shengelia",
+    "createdAt": "2026-11-01T10:00:00.000Z",
+    "reservations": []
+  },
+  {
+    "userId": "f3333333-2222-2222-2222-222222222222",
+    "locationId": "33333333-3333-3333-3333-333333333333",
+    "name": "Mariam Tsereteli",
+    "createdAt": "2026-11-01T10:00:00.000Z",
+    "reservations": []
+  }
+]
+
