@@ -1,4 +1,4 @@
-﻿using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using APIHandler.Constants;
 using APIHandler.Exceptions;
@@ -57,6 +57,16 @@ public class EditLocationHandler : IApiRequestHandler
         if (updateRequest is null)
         {
             return ResponseBuilder.CreateErrorResponse(400, "Invalid payload", context.Logger);
+        }
+
+        if (string.IsNullOrWhiteSpace(updateRequest.Address))
+        {
+            return ResponseBuilder.CreateErrorResponse(400, "Address is required and cannot be empty", context.Logger);
+        }
+
+        if (updateRequest.TotalCapacity < 0)
+        {
+            return ResponseBuilder.CreateErrorResponse(400, "Total capacity cannot be negative", context.Logger);
         }
 
         if (!OccupancyHelper.TryParseStrict(updateRequest.AverageOccupancy, out string sanitizedOccupancy))

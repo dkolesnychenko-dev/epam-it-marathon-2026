@@ -1,4 +1,4 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using APIHandler.Constants;
@@ -47,6 +47,16 @@ public class CreateLocationHandler : IApiRequestHandler
         if (createLocationRequest is null)
         {
             return ResponseBuilder.CreateErrorResponse(400, "Invalid payload", context.Logger);
+        }
+
+        if (string.IsNullOrWhiteSpace(createLocationRequest.Address))
+        {
+            return ResponseBuilder.CreateErrorResponse(400, "Address is required and cannot be empty", context.Logger);
+        }
+
+        if (createLocationRequest.TotalCapacity < 0)
+        {
+            return ResponseBuilder.CreateErrorResponse(400, "Total capacity cannot be negative", context.Logger);
         }
 
         if (!OccupancyHelper.TryParseStrict(createLocationRequest.AverageOccupancy, out string sanitizedOccupancy))
