@@ -1,4 +1,4 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using APIHandler.Constants;
@@ -41,7 +41,10 @@ public class GetLocationByIdHandler : IApiRequestHandler
         }
 
         var locationResponse = LocationMapper.ToLocationResponse(location);
-        locationResponse.TotalCapacity = await _locationService.GetLocationCapacityAsync(location.Id);
+        if (locationResponse.TotalCapacity <= 0)
+        {
+            locationResponse.TotalCapacity = await _locationService.GetLocationCapacityAsync(location.Id);
+        }
         locationResponse.Rating = await _locationService.GetLocationRatingAsync(location.Id);
         locationResponse.AverageOccupancy = OccupancyHelper.SanitizeLegacy(locationResponse.AverageOccupancy);
         return ResponseBuilder.CreateSuccessResponse(locationResponse);

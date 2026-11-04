@@ -35,9 +35,11 @@ public class GetLocationsHandler : IApiRequestHandler
                 .Select(LocationMapper.ToLocationResponse).ToList();
             foreach (var location in responseModel)
             {
-                var capacity = await _locationService.GetLocationCapacityAsync(location.Id);
+                if (location.TotalCapacity <= 0)
+                {
+                    location.TotalCapacity = await _locationService.GetLocationCapacityAsync(location.Id);
+                }
                 var rating = await _locationService.GetLocationRatingAsync(location.Id);
-                location.TotalCapacity = capacity;
                 location.Rating = rating;
 
                 location.AverageOccupancy = OccupancyHelper.SanitizeLegacy(location.AverageOccupancy);

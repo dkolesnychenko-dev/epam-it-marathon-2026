@@ -51,7 +51,7 @@ public class LocationService : ILocationService
     public async Task<int> GetLocationCapacityAsync(string locationId)
     {
         var tables = await _locationRepository.GetTablesByLocationIdAsync(locationId);
-        return tables.Count;
+        return tables.Sum(t => t.Capacity);
     }
 
     public async Task<double> GetLocationRatingAsync(string locationId)
