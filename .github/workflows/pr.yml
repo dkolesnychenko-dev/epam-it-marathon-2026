@@ -75,4 +75,13 @@
 
                 - name: Deploy to S3
                   if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-                  run: aws s3 sync dist/restaurant-frontend-app/browser s3://${{ vars.S3_BUCKET }}/ --delete
+                  env:
+                    S3_BUCKET_VAR: ${{ vars.S3_BUCKET }}
+                    ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+                  run: |
+                    BUCKET="$S3_BUCKET_VAR"
+                    if [ -z "$BUCKET" ] || [ "$BUCKET" = "restaurant-frontend-606075279506" ]; then
+                      BUCKET="restaurant-frontend-${ACCOUNT_ID}"
+                    fi
+                    echo "Deploying to S3 bucket: $BUCKET"
+                    aws s3 sync dist/restaurant-frontend-app/browser "s3://$BUCKET/" --delete
