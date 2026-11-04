@@ -24,6 +24,8 @@ public interface IRemember
 
     bool TryRecall<T>(out T thing) where T : notnull;
 
+    bool TryRecall<T>(string name, out T thing) where T : notnull;
+
     /// <summary>Every <typeparamref name="T"/> remembered in this scenario, oldest first.</summary>
     IReadOnlyList<T> RecallAll<T>() where T : notnull;
 }

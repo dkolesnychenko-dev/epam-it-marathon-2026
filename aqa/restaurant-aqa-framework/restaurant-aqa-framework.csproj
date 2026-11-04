@@ -7,6 +7,8 @@
     <RootNamespace>Restaurant_Aqa_Framework</RootNamespace>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Use AssemblyTaskFactory so feature generation runs in-process without spawning TaskHostFactory -->
+    <ReqnrollGenerationTaskFactory>AssemblyTaskFactory</ReqnrollGenerationTaskFactory>
     <!-- `dotnet test`/`dotnet run` put TUnit's HTML/TRX/JSON next to Reqnroll's report and the traces (see Core/ArtifactPaths.cs). -->
     <TestingPlatformCommandLineArguments>--results-directory "$(MSBuildProjectDirectory)/TestResults"</TestingPlatformCommandLineArguments>
   </PropertyGroup>

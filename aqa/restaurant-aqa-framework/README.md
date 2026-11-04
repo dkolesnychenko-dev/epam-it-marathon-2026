@@ -9,8 +9,9 @@ Guidance for extending the suite (writing Gherkin, steps, Screenplay, test data,
 ```bash
 cp .env.example .env        # then fill in your own values (see "Configuration")
 dotnet build
-dotnet run --no-build -- --report-trx                          # everything
-dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=smoke]"   # by tag
+dotnet run --no-build -- --report-trx                                     # run entire suite
+dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-1]"    # run Level 1 Group Pre-Order tests
+dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=smoke]"      # run smoke tests
 ```
 
 Everything a run produces lands in `TestResults/`: the TUnit report and TRX, the Reqnroll report in `reqnroll/`, and Playwright traces in `traces/` (open one with `npx playwright show-trace <file>.zip`).
@@ -56,16 +57,7 @@ The full list, with defaults, is in `.env.example`.
 
 1. `cp .env.example .env` and set `UI_URL` and `API_URL` to your deployment (API URL includes the stage, for example `…/develop`).
 2. Waiters cannot be created by signing up, so create a waiter (and, for the admin scenarios, an admin) in *your* environment and put its credentials in `WAITER_*` / `ADMIN_*`. Optionally add a table and its assigned waiter (`TESTTABLE_*`).
-3. Run `dotnet build` and a small slice first (`--treenode-filter "/*/*/*/*[Category=smoke]"`).
-
-### If you have not deployed your own homework
-
-If you deployed the original application, test that: set `UI_URL` / `API_URL` as above. Otherwise point the framework at a comparable public site (Booking, Airbnb, OpenTable, …) and write all the layers for it yourself: Gherkin features, step definitions, Screenplay tasks and questions, page objects with locators, and API clients where the site has a usable API. Use only flows you are allowed to automate (no purchases, no real bookings, respect the site's terms), and set `UI_URL` to that site.
-
-1. **Generate a skeleton with Playwright codegen** (see "Presetup instructions"): record one flow, for example search → open a result → check details. Save the generated code to a scratch file, it is only raw material.
-2. **Split it across the layers**: locators and small actions go to `Ui/` page objects, the flow becomes a task in `Screenplay/Tasks/`, the read-backs become questions in `Screenplay/Questions/`, the business wording goes to `Features/` and thin glue to `StepDefinitions/`.
-3. **Replace weak locators.** Codegen often emits positional or text-fragile selectors. Prefer role + accessible name, label, test id, then CSS (see [CLAUDE.md](CLAUDE.md)); check them in the Playwright inspector.
-4. Tag scenarios `@ui` / `@api`, keep them independent, and run `npx gherkin-lint -c .gherkin-lintrc "Features/*.feature"`.
+3. Run `dotnet build` and a small slice first (`--treenode-filter "/*/*/*/*[Category=level-1]"` or `--treenode-filter "/*/*/*/*[Category=smoke]"`).
 
 ### CI on your own public repository
 

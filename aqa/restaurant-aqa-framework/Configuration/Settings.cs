@@ -88,24 +88,36 @@ public sealed record Settings(
     {
         if (EnvReader.TryGetStringValue(key, out var value) && !string.IsNullOrWhiteSpace(value))
             return value;
+        if (EnvReader.TryGetStringValue($"AQA_{key}", out var aqaVal) && !string.IsNullOrWhiteSpace(aqaVal))
+            return aqaVal;
 
         throw new InvalidOperationException(
-            $"Missing required configuration '{key}'. Set it in '.env' or as an environment variable. " +
+            $"Missing required configuration '{key}' (or 'AQA_{key}'). Set it in '.env' or as an environment variable. " +
             "See '.env.example' for the full list of supported settings.");
     }
 
     private static string? ReadOptionalString(string key)
-        => EnvReader.TryGetStringValue(key, out var value) && !string.IsNullOrWhiteSpace(value) ? value : null;
+    {
+        if (EnvReader.TryGetStringValue(key, out var value) && !string.IsNullOrWhiteSpace(value))
+            return value;
+        if (EnvReader.TryGetStringValue($"AQA_{key}", out var aqaVal) && !string.IsNullOrWhiteSpace(aqaVal))
+            return aqaVal;
+        return null;
+    }
 
     private static bool ReadBool(string key, bool fallback)
-        => EnvReader.TryGetBooleanValue(key, out var value) ? value : fallback;
+        => (EnvReader.TryGetBooleanValue(key, out var value) || EnvReader.TryGetBooleanValue($"AQA_{key}", out value)) ? value : fallback;
 
     private static int ReadInt(string key, int fallback)
-        => EnvReader.TryGetIntValue(key, out var value) ? value : fallback;
+        => (EnvReader.TryGetIntValue(key, out var value) || EnvReader.TryGetIntValue($"AQA_{key}", out value)) ? value : fallback;
 
     private static TEnum ParseEnum<TEnum>(string key, TEnum fallback) where TEnum : struct, Enum
     {
-        if (!EnvReader.TryGetStringValue(key, out var raw) || string.IsNullOrWhiteSpace(raw))
+        var hasVal = EnvReader.TryGetStringValue(key, out var raw) && !string.IsNullOrWhiteSpace(raw);
+        if (!hasVal)
+            hasVal = EnvReader.TryGetStringValue($"AQA_{key}", out raw) && !string.IsNullOrWhiteSpace(raw);
+
+        if (!hasVal)
             return fallback;
 
         if (Enum.TryParse<TEnum>(raw, ignoreCase: true, out var parsed))

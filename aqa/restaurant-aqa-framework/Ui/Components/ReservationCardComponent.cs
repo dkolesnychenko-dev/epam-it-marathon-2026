@@ -14,8 +14,10 @@ public sealed class ReservationCardComponent(ILocator root)
     public ILocator PreOrderButton => root.Locator("button.btn-preorder");
     public ILocator LeaveFeedbackButton => root.Locator("button.btn-leave-feedback");
     public ILocator UpdateFeedbackButton => root.Locator("button.btn-update-feedback");
+    public ILocator GroupPreOrderButton => root.GetByRole(AriaRole.Button, new() { Name = "Group Pre-order" });
 
     public Task CancelAsync() => CancelButton.ClickAsync();
     public Task PreOrderAsync() => PreOrderButton.ClickAsync();
+    public Task GroupPreOrderAsync() => GroupPreOrderButton.ClickAsync();
     public Task LeaveFeedbackAsync() => LeaveFeedbackButton.ClickAsync();
 }
