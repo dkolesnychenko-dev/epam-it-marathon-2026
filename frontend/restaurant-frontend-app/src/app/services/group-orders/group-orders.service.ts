@@ -10,6 +10,17 @@ import { GroupStatusResponse } from '@app/models/group-orders/group-status.model
 import { OwnerSessionResponse } from '@app/models/group-orders/owner-session.model';
 import { SubmittedDish } from '@app/models/group-orders/submit-group-pre-order.model';
 
+interface FallbackReservationDetails {
+  locationId?: string;
+  restaurantName?: string;
+  locationAddress?: string;
+  startTime?: string | Date;
+  endTime?: string | Date;
+  guestCount?: number;
+  tableNumber?: number;
+  tableName?: string;
+  createdByName?: string;
+}
 @Injectable({ providedIn: 'root' })
 export class GroupOrdersService {
   private readonly baseUrl = inject(API_BASE_URL);
@@ -25,7 +36,7 @@ export class GroupOrdersService {
           if (err.status === 400 || err.status === 404) {
             return forkJoin({
               owner: this.getOwnerSession$(reservationId),
-              res: this.http.get<any>(`${this.baseUrl}/reservations/${reservationId}`),
+              res: this.http.get<FallbackReservationDetails>(`${this.baseUrl}/reservations/${reservationId}`),
             }).pipe(
               map(({ owner, res }): GuestInvite => ({
                 GroupReservationId: owner.groupReservationId ?? '',
