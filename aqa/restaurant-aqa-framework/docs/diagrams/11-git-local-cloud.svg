@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 580" width="1020" height="580" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="m_gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="m_green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#15803d"/>
+    </marker>
+    <marker id="m_red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b91c1c"/>
+    </marker>
+    <marker id="m_blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1020" height="580" fill="#ffffff"/>
+  <text x="510" y="32" text-anchor="middle" font-size="20" font-weight="bold" fill="#0f172a">Git Hooks &amp; Monorepo CI/CD Pipelines (Local &amp; Cloud)</text>
+
+  <!-- Local Stage Box -->
+  <rect x="20" y="55" width="980" height="195" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="40" y="75" text-anchor="start" font-size="12" fill="#334155" font-weight="bold">Local Workspace (Your PC)</text>
+
+  <!-- Local Flow Nodes -->
+  <!-- 1. Write Code -->
+  <rect x="35" y="125" width="120" height="60" rx="8" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+  <text x="95" y="153" text-anchor="middle" font-size="13" fill="#0f172a" font-weight="bold">Write Code</text>
+  <text x="95" y="169" text-anchor="middle" font-size="10" fill="#334155">AQA, BE, FE, Infra</text>
+
+  <!-- Arrow to commit -->
+  <path d="M155,155 L187,155" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#m_gray)"/>
+
+  <!-- 2. git commit -->
+  <rect x="187" y="125" width="120" height="60" rx="8" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+  <text x="247" y="153" text-anchor="middle" font-size="13" fill="#0f172a" font-weight="bold">git commit</text>
+  <text x="247" y="169" text-anchor="middle" font-size="10" fill="#334155">stage &amp; message</text>
+
+  <!-- Arrow to pre-commit / commit-msg -->
+  <path d="M307,155 L339,155" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#m_gray)"/>
+
+  <!-- 3. Husky: pre-commit & commit-msg -->
+  <rect x="339" y="118" width="165" height="74" rx="8" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+  <text x="421" y="142" text-anchor="middle" font-size="12" fill="#78350f" font-weight="bold">pre-commit &amp; commit-msg</text>
+  <text x="421" y="158" text-anchor="middle" font-size="10" fill="#92400e">format C#, gherkin lint</text>
+  <text x="421" y="172" text-anchor="middle" font-size="10" fill="#92400e">Conventional Commits</text>
+
+  <!-- Arrow to git push -->
+  <path d="M504,155 L536,155" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#m_gray)"/>
+
+  <!-- 4. git push -->
+  <rect x="536" y="125" width="120" height="60" rx="8" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+  <text x="596" y="153" text-anchor="middle" font-size="13" fill="#0f172a" font-weight="bold">git push</text>
+  <text x="596" y="169" text-anchor="middle" font-size="10" fill="#334155">send to GitHub</text>
+
+  <!-- Arrow to pre-push -->
+  <path d="M656,155 L688,155" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#m_gray)"/>
+
+  <!-- 5. Husky: pre-push -->
+  <rect x="688" y="125" width="135" height="60" rx="8" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+  <text x="755" y="150" text-anchor="middle" font-size="12" fill="#78350f" font-weight="bold">pre-push hook</text>
+  <text x="755" y="166" text-anchor="middle" font-size="10" fill="#92400e">dotnet build &amp; analyzers</text>
+
+  <!-- Arrow to remote GitHub -->
+  <path d="M823,155 L855,155" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#m_gray)"/>
+
+  <!-- 6. GitHub Remote -->
+  <rect x="855" y="125" width="130" height="60" rx="8" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/>
+  <text x="920" y="150" text-anchor="middle" font-size="12" fill="#312e81" font-weight="bold">GitHub Monorepo</text>
+  <text x="920" y="166" text-anchor="middle" font-size="10" fill="#3730a3">path-based triggers</text>
+
+  <!-- Rejection Loop Arrows -->
+  <path d="M421,118 L421,95 L95,95 L95,125" fill="none" stroke="#b91c1c" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#m_red)"/>
+  <text x="258" y="90" text-anchor="middle" font-size="10" font-weight="bold" fill="#b91c1c">lint / style / message error (commit blocked)</text>
+
+  <path d="M755,125 L755,75 L95,75 L95,125" fill="none" stroke="#b91c1c" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#m_red)"/>
+  <text x="425" y="70" text-anchor="middle" font-size="10" font-weight="bold" fill="#b91c1c">build warnings/errors (push blocked)</text>
+
+  <text x="40" y="235" text-anchor="start" font-size="11" fill="#475569">💡 Local hooks require one-time activation via: git config core.hooksPath aqa/restaurant-aqa-framework/.husky</text>
+
+  <!-- Cloud Stage Box -->
+  <rect x="20" y="265" width="980" height="295" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="40" y="285" text-anchor="start" font-size="12" fill="#334155" font-weight="bold">GitHub Actions Cloud Workflows (.github/workflows/)</text>
+
+  <!-- Connecting Bus from GitHub Monorepo down to pipelines -->
+  <path d="M920,185 L920,310 L50,310" fill="none" stroke="#4338ca" stroke-width="2"/>
+
+  <!-- Pipeline 1: AQA Quality -->
+  <path d="M125,310 L125,335" fill="none" stroke="#0369a1" stroke-width="2" marker-end="url(#m_blue)"/>
+  <rect x="35" y="335" width="180" height="95" rx="8" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="125" y="358" text-anchor="middle" font-size="13" fill="#0369a1" font-weight="bold">aqa-quality.yml</text>
+  <text x="125" y="375" text-anchor="middle" font-size="10" fill="#075985">Trigger: PR / push on aqa/**</text>
+  <text x="125" y="392" text-anchor="middle" font-size="10" fill="#0c4a6e">• Stray files validation</text>
+  <text x="125" y="407" text-anchor="middle" font-size="10" fill="#0c4a6e">• dotnet format &amp; build</text>
+  <text x="125" y="421" text-anchor="middle" font-size="10" fill="#0c4a6e">• gherkin-lint &amp; test discovery</text>
+
+  <!-- Pipeline 2: AQA Tests -->
+  <path d="M315,310 L315,335" fill="none" stroke="#15803d" stroke-width="2" marker-end="url(#m_green)"/>
+  <rect x="225" y="335" width="180" height="95" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="315" y="358" text-anchor="middle" font-size="13" fill="#15803d" font-weight="bold">aqa-tests.yml</text>
+  <text x="315" y="375" text-anchor="middle" font-size="10" fill="#14532d">Trigger: cron (02:00) / manual</text>
+  <text x="315" y="392" text-anchor="middle" font-size="10" fill="#14532d">• E2E tests (UI &amp; API)</text>
+  <text x="315" y="407" text-anchor="middle" font-size="10" fill="#14532d">• TUnit &amp; Reqnroll reports</text>
+  <text x="315" y="421" text-anchor="middle" font-size="10" fill="#14532d">• Playwright traces on error</text>
+
+  <!-- Pipeline 3: Backend Deploy -->
+  <path d="M505,310 L505,335" fill="none" stroke="#4338ca" stroke-width="2" marker-end="url(#m_gray)"/>
+  <rect x="415" y="335" width="180" height="95" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="505" y="358" text-anchor="middle" font-size="13" fill="#5b21b6" font-weight="bold">deploy.yml</text>
+  <text x="505" y="375" text-anchor="middle" font-size="10" fill="#4c1d95">Trigger: push on backend/**</text>
+  <text x="505" y="392" text-anchor="middle" font-size="10" fill="#3b0764">• AWS OIDC authentication</text>
+  <text x="505" y="407" text-anchor="middle" font-size="10" fill="#3b0764">• .NET 8 + Python Syndicate</text>
+  <text x="505" y="421" text-anchor="middle" font-size="10" fill="#3b0764">• Lambda &amp; DynamoDB deploy</text>
+
+  <!-- Pipeline 4: Frontend CI/CD -->
+  <path d="M695,310 L695,335" fill="none" stroke="#ea580c" stroke-width="2" marker-end="url(#m_gray)"/>
+  <rect x="605" y="335" width="180" height="95" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="695" y="358" text-anchor="middle" font-size="13" fill="#9a3412" font-weight="bold">pr.yml (Frontend)</text>
+  <text x="695" y="375" text-anchor="middle" font-size="10" fill="#7c2d12">Trigger: push/PR on frontend/**</text>
+  <text x="695" y="392" text-anchor="middle" font-size="10" fill="#7c2d12">• Node 22, npm ci, lint</text>
+  <text x="695" y="407" text-anchor="middle" font-size="10" fill="#7c2d12">• TypeScript tsc type-check</text>
+  <text x="695" y="421" text-anchor="middle" font-size="10" fill="#7c2d12">• Prod build &amp; S3 sync (main)</text>
+
+  <!-- Pipeline 5: Terraform IaC -->
+  <path d="M885,310 L885,335" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#m_gray)"/>
+  <rect x="795" y="335" width="180" height="95" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+  <text x="885" y="358" text-anchor="middle" font-size="13" fill="#065f46" font-weight="bold">terraform.yml</text>
+  <text x="885" y="375" text-anchor="middle" font-size="10" fill="#064e3b">Trigger: push/PR on infra/**</text>
+  <text x="885" y="392" text-anchor="middle" font-size="10" fill="#064e3b">• terraform fmt &amp; validate</text>
+  <text x="885" y="407" text-anchor="middle" font-size="10" fill="#064e3b">• PR: plan comment in PR</text>
+  <text x="885" y="421" text-anchor="middle" font-size="10" fill="#064e3b">• Main: auto-approved apply</text>
+
+  <!-- Summary Box -->
+  <rect x="35" y="450" width="940" height="85" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="50" y="472" font-size="11" font-weight="bold" fill="#0f172a">Monorepo Workflow Highlights:</text>
+  <text x="50" y="490" font-size="10.5" fill="#334155">• Isolated Path Filtering: Workflows execute only when relevant directories change (paths: ["aqa/**"], ["backend/**"], etc.).</text>
+  <text x="50" y="506" font-size="10.5" fill="#334155">• Security &amp; OIDC: No long-lived cloud keys in repo; AWS credentials use OpenID Connect (OIDC role assumption).</text>
+  <text x="50" y="522" font-size="10.5" fill="#334155">• Artifacts &amp; Telemetry: E2E test runs publish TUnit HTML/TRX, Reqnroll reports, and Playwright video/DOM zip traces for post-mortems.</text>
+</svg>

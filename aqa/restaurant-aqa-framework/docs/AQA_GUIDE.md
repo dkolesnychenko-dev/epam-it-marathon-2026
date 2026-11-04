@@ -455,63 +455,167 @@ If a test fails because of a **real bug** in the app, do not delete it or switch
 
 ### Basic terms
 
-- **Git**: a version control system. It keeps the history of changes.
-- **Hooks**: scripts that Git runs by itself on events (`pre-commit`, `pre-push`).
-- **CI/CD**: automation that checks and builds the code after a push. CI means Continuous Integration. CD means Continuous Delivery.
+- **Git**: a distributed version control system that tracks file changes over time.
+- **Hooks**: automated scripts triggered by Git when specific events occur (such as `commit-msg`, `pre-commit`, `pre-push`).
+- **CI/CD**: Continuous Integration & Continuous Delivery/Deployment automation that tests, builds, and deploys code in the cloud upon pushes or pull requests.
+- **Monorepo Architecture**: This repository houses the entire marathon stack together:
+  - `backend/` — Serverless REST API (.NET 10, Lambda, DynamoDB);
+  - `frontend/` — Client Single Page Application (Angular 22);
+  - `infra/` — Cloud Infrastructure as Code (Terraform);
+  - `aqa/` — Test automation framework (Reqnroll, Playwright, TUnit).
 
-### Husky: hooks stored in the repo
+---
 
-By default, hooks live in `.git/hooks` and are **not** shared through the repo. Husky puts them in a `.husky/` folder inside the project, so the whole team gets them. After one activation command, Git uses these files.
+### Husky.Net: Local quality gates stored in the repository
 
-| Hook | When it runs | What it does |
-|---|---|---|
-| `pre-commit` | When you run `git commit` | `dotnet format` (C# style) and `gherkin-lint` (`.feature` syntax). An error blocks the commit |
-| `commit-msg` | After you write the commit message | Checks the **Conventional Commits** format (`feat:`, `fix:`, `chore:`) |
-| `pre-push` | When you run `git push` | `dotnet build` with strict analyzers. An error blocks the push |
+By default, Git hooks live in the unversioned local directory `.git/hooks/` and are **not** shared with the team. This repository uses **Husky.Net** (declared in `.config/dotnet-tools.json`), which keeps version-controlled hooks inside `aqa/restaurant-aqa-framework/.husky/`.
 
-### Two levels of checks
+#### One-time local activation
+
+Run from the repository root:
+
+```bash
+dotnet tool restore --tool-manifest aqa/restaurant-aqa-framework/.config/dotnet-tools.json
+git config core.hooksPath aqa/restaurant-aqa-framework/.husky
+```
+
+> [!NOTE]
+> Setting `core.hooksPath` points Git to the framework's `.husky` folder from the root of the monorepo. The scripts use `git rev-parse --show-toplevel` to resolve paths accurately.
+
+#### How the hooks work (Deep Analysis)
+
+All hooks in `.husky/` are **monorepo-aware**: they inspect the Git diff before running any checks. If a commit touches only frontend or backend files, the AQA hooks exit immediately (`exit 0`), ensuring zero overhead for non-AQA workflows.
+
+```
+       git commit
+           │
+           ▼
+   [commit-msg hook] ────────► Regex validation: type(scope): message
+           │                   (Bypasses merges, reverts, and fixups)
+           ▼
+  [pre-commit hook]  ────────► Checks diff: touches aqa/**?
+           │                   ├─ No  ──► Instant exit 0
+           │                   └─ Yes ──► dotnet husky run --group pre-commit
+           │                              ├─ dotnet format --verify-no-changes
+           │                              └─ npx gherkin-lint on staged .feature
+           ▼
+       git push
+           │
+           ▼
+    [pre-push hook]   ────────► Checks diff against upstream: touches aqa/**?
+                               ├─ No  ──► Instant exit 0
+                               └─ Yes ──► dotnet husky run --group pre-push
+                                          └─ dotnet build (Warnings as Errors)
+```
+
+| Hook script | Task runner configuration | Trigger event | Verification & behavior |
+|---|---|---|---|
+| `commit-msg` | Shell script validation | Immediately after commit message is entered | Validates the **Conventional Commits** format: `^(feat\|fix\|docs\|style\|refactor\|perf\|test\|build\|ci\|chore\|revert)(\([a-z0-9._-]+\))?!?: .+`. Blocks non-compliant messages. |
+| `pre-commit` | `task-runner.json` (`pre-commit`) | When running `git commit` | 1. **`format-cs`**: runs `dotnet format restaurant-aqa-framework.csproj --verify-no-changes --no-restore` on all staged `**/*.cs` files against `.editorconfig`.<br>2. **`gherkin-lint`**: runs `npx --yes gherkin-lint -c .gherkin-lintrc ${staged}` on all staged `**/*.feature` files. Any formatting or lint error blocks the commit. |
+| `pre-push` | `task-runner.json` (`pre-push`) | When running `git push` | Compares current branch against upstream `@{u}`. Runs `dotnet build restaurant-aqa-framework.csproj --nologo -v q`. Because `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` is enabled, any compiler warning or broken step binding blocks the push. |
+
+---
+
+### Local and Cloud verification architecture
 
 ![Local and cloud checks](diagrams/11-git-local-cloud.svg)
 
-**Local hooks** only work after you run the activation command (from the README, with `git config core.hooksPath`). Without it, Git skips the checks and only the cloud checks run.
+---
 
-### GitHub Actions: two pipelines
+### GitHub Actions: The 5 Monorepo CI/CD Pipelines
 
-A pipeline is a `.yml` file that says what to do and when. GitHub reads these files from the `.github/workflows/` folder.
+GitHub Actions workflows reside in `.github/workflows/` at the **root of the repository**. Each workflow uses path filtering (`paths:`) so it triggers only when changes affect its corresponding subsystem.
 
-| File | When it runs | What it does |
-|---|---|---|
-| `aqa-quality.yml` | **Automatically** on every `push` and pull request | Checks for stray files, formatting, the build (any warning = error), Gherkin lint, and test discovery (are the tests visible) |
-| `aqa-tests.yml` | **At night** on a schedule, or **by hand** (Actions → AQA Tests → Run workflow) | Starts a browser, calls the deployed backend, runs the E2E tests, and saves reports as artifacts |
+| Workflow file | Trigger events | Target subsystem | Key operations & Quality gates |
+|---|---|---|---|
+| **`aqa-quality.yml`** | `pull_request`, `push` to `main` on `aqa/restaurant-aqa-framework/**` | Test Automation | Fast, deterministic gate without live cloud dependencies. Checks for untracked stray files (`bin/`, `obj/`, `TestResults/`), restores packages, verifies C# code formatting, compiles with zero warnings, lints Gherkin, and verifies test discovery (`--list-tests`). |
+| **`aqa-tests.yml`** | `workflow_dispatch` (manual) or `schedule` (`cron: "0 2 * * *"`) | Test Automation | Runs end-to-end Playwright + Reqnroll tests against the live deployment. Supports dynamic `scope` (`all`, `ui`, `api`) or custom filter. Collects TUnit HTML/TRX reports, Reqnroll reports, and Playwright DOM/video trace `.zip` archives upon failure. Generates a markdown summary table in `$GITHUB_STEP_SUMMARY`. |
+| **`deploy.yml`** | `push` to `main` on `backend/**`, `workflow_dispatch` | Backend API | Passwordless AWS authentication via OIDC (`role-to-assume`). Installs .NET 8, Python 3.11, and `aws-syndicate`. Executes `syndicate build` and `syndicate update` (fast code update) or `syndicate deploy` (full infrastructure redeploy). |
+| **`pr.yml`** | `pull_request`, `push` to `main` on `frontend/restaurant-frontend-app/**` | Frontend Application | Node.js 22 setup, `npm ci`, ESLint (`npm run lint`), TypeScript strict type-checking (`tsc -p tsconfig.app.json --noEmit` and `tsconfig.spec.json`), production Angular build. On merge to `main`, synchronizes compiled assets to Amazon S3 (`aws s3 sync dist/... s3://${{ vars.S3_BUCKET }}/ --delete`). |
+| **`terraform.yml`** | `pull_request`, `push` to `main` on `infra/terraform/**` | Cloud Infrastructure | Uses Terraform 1.10.5 with AWS OIDC authentication. On PR: runs `fmt`, `init`, `validate`, and `plan`, then automatically comments/updates the detailed plan in the PR via `actions/github-script`. On merge to `main`: executes `terraform apply -auto-approve`. |
 
-Why the tests do not run on every push: E2E tests are slow and heavy, and they call the real backend. Running them on every commit is too expensive.
+---
 
-### How the cloud pipeline runs
+### Deep dive into the AQA Workflows
 
-![Cloud pipeline](diagrams/12-cloud-pipeline-sequence.svg)
+#### 1. `aqa-quality.yml` (Deterministic PR Gate)
 
-### Secrets and variables
+This workflow runs on every push and PR that modifies the test framework:
+1. **Clean workspace enforcement**: Ensures that generated code-behind (`*.feature.cs`), test results (`TestResults/`), IDE metadata (`.vs/`), and binaries (`bin/`, `obj/`) are never tracked by Git.
+2. **Deterministic build**: Builds with `--configuration Release` and `--no-restore` following `dotnet format --verify-no-changes`.
+3. **Test discovery verification**: Runs `dotnet bin/Release/net10.0/restaurant-aqa-framework.dll --list-tests` to ensure every Gherkin step has an unambiguous binding in `StepDefinitions/`.
 
-Logins, passwords, and addresses must **never** be committed. The `.env` file is listed in `.gitignore`. For the cloud, put the values in GitHub:
+#### 2. `aqa-tests.yml` (Live E2E Execution & Reporting)
 
-**Settings → Secrets and variables → Actions**
+Because end-to-end tests interact with live cloud resources, they run on-demand or nightly:
+1. **Environment resolution & secret masking**: Dynamically merges repository secrets and variables into environment variables (`UI_URL`, `API_URL`, `WAITER_USERNAME`, etc.) while masking credentials using `::add-mask::`.
+2. **Fault-tolerant artifact collection**: The test execution step has `continue-on-error: true`. Even if tests fail, subsequent steps (`if: always()`) upload:
+   - **TUnit reports & TRX logs** (`TestResults/*-report.html`, `*.trx`);
+   - **Reqnroll reports** (`TestResults/reqnroll/`);
+   - **Playwright trace archives** (`TestResults/traces/*.zip`).
+3. **Trace post-mortem**: A failed UI test records screenshots, DOM snapshots, network calls, and console logs. Download the trace artifact and inspect it locally:
+   ```bash
+   npx playwright show-trace <trace-file>.zip
+   ```
+4. **Summary dashboard**: A built-in Python script parses the generated TRX XML report and outputs an executive summary table directly into the GitHub Actions run summary page.
+5. **Final gate**: Step `Fail the job if tests failed` asserts the final exit status so the pipeline reflects failure only after all artifacts are safely published.
 
-Examples: `AQA_UI_URL`, `AQA_API_URL`, `AQA_WAITER_USERNAME`, `AQA_WAITER_PASSWORD`.
+---
 
-### What happens if you push right now
+### Cloud Secrets and Variables Configuration
 
-- **Locally:** if the hooks are not activated, the push goes through with no checks.
-- **In the cloud:** `aqa-quality.yml` starts by itself. After 1–2 minutes you see a green check or a red cross (in the repo's **Actions** tab or next to the commit).
-- **The tests (`aqa-tests.yml`)** do not start by themselves. They run by hand or at night. Even when run by hand, they fail if the secrets are not set.
+To run cloud pipelines successfully, configure variables and secrets in GitHub under:  
+**Repository Settings → Secrets and variables → Actions**
 
-### Important: where the `.github` folder must be
+```
+                     ┌──────────────────────────────────────────────┐
+                     │          GitHub Actions Context              │
+                     ├──────────────────────┬───────────────────────┤
+                     │   Variables (vars)   │   Secrets (secrets)   │
+                     ├──────────────────────┼───────────────────────┤
+AQA Framework        │ AQA_UI_URL           │ AQA_WAITER_USERNAME   │
+                     │ AQA_API_URL          │ AQA_WAITER_PASSWORD   │
+                     │ AQA_TESTTABLE_ID     │ AQA_ADMIN_USERNAME    │
+                     │                      │ AQA_ADMIN_PASSWORD    │
+Backend Deploy       │                      │ AWS_DEPLOY_ROLE       │
+Frontend CI/CD       │ BACKEND_URL          │ AWS_DEPLOY_S3_ROLE    │
+                     │ S3_BUCKET            │                       │
+                     │ AWS_REGION           │                       │
+Infrastructure (IaC) │ ALERT_EMAILS         │ AWS_TERRAFORM_ROLE    │
+                     └──────────────────────┴───────────────────────┘
+```
 
-GitHub looks for pipelines **only** in `.github/workflows/` at the **root of the repository**. If the framework is in a subfolder such as `aqa/restaurant-aqa-framework/`, then either:
+> [!TIP]
+> **OpenID Connect (OIDC) Security**: Notice that cloud deployments (Backend, Frontend, and Terraform) do **not** use permanent `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY`. Instead, they request temporary credentials via AWS IAM Roles (`role-to-assume`), authenticating cryptographically via GitHub's OIDC identity provider (`id-token: write`).
 
-- the `.github/` folder is also at the repo root, and the pipeline uses `working-directory: aqa/restaurant-aqa-framework`; or
-- the repository root is the same as the framework folder.
+---
 
-If a pipeline does not show up in GitHub, check this first. The same applies to `.husky/`: hooks work from the root of the Git repository.
+### Important: Monorepo folder layout & `.github/` location
+
+> [!IMPORTANT]
+> GitHub Actions **only discovers workflows located in `.github/workflows/` at the root of the Git repository**. 
+
+If the AQA framework resides in `aqa/restaurant-aqa-framework/`, keep `.github/` at the root:
+```text
+epam-it-marathon-2026/          <-- Repository Root
+├── .github/
+│   └── workflows/
+│       ├── aqa-quality.yml     <-- defaults.run.working-directory: aqa/restaurant-aqa-framework
+│       ├── aqa-tests.yml       <-- defaults.run.working-directory: aqa/restaurant-aqa-framework
+│       ├── deploy.yml          <-- defaults.run.working-directory: backend/restaurant-backend-app
+│       ├── pr.yml              <-- defaults.run.working-directory: frontend/restaurant-frontend-app
+│       └── terraform.yml       <-- working-directory: infra/terraform
+├── aqa/
+│   └── restaurant-aqa-framework/
+│       ├── .husky/             <-- Activated via: git config core.hooksPath aqa/restaurant-aqa-framework/.husky
+│       ├── Features/
+│       └── StepDefinitions/
+├── backend/
+├── frontend/
+└── infra/
+```
+
+Inside the workflows, each job defines `defaults.run.working-directory` matching its target subsystem, allowing seamless monorepo orchestration without path conflicts.
 
 ---
 
