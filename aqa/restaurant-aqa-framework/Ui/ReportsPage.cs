@@ -7,5 +7,11 @@ public sealed class ReportsPage(IPage page) : BasePage(page)
 {
     public ILocator Dashboard => Page.Locator("app-reporting-dashboard");
 
-    public Task NavigateAsync() => NavigateToAsync("/reports");
+    public async Task NavigateAsync()
+    {
+        if (!Page.Url.EndsWith("/reports", StringComparison.OrdinalIgnoreCase))
+        {
+            await NavigateToAsync("/reports");
+        }
+    }
 }

@@ -1,3 +1,4 @@
+using Microsoft.Playwright;
 using Restaurant_Aqa_Framework.Ui;
 
 namespace Restaurant_Aqa_Framework.Screenplay.Tasks;
@@ -15,5 +16,14 @@ public sealed class SignInThroughTheLoginForm(string email, string password, boo
 
         await loginPage.SignInAsync(email, password);
         await page.WaitForURLAsync(url => !url.Contains("/login", StringComparison.Ordinal));
+
+        try
+        {
+            await page.WaitForFunctionAsync("() => localStorage.getItem('user') !== null", null, new() { Timeout = 5000 });
+        }
+        catch (TimeoutException)
+        {
+            // If the user profile is not saved to localStorage within timeout, proceed
+        }
     }
 }
