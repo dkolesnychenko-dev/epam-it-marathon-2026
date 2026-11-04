@@ -301,8 +301,8 @@ public sealed class GroupPreOrderStepDefinitions(Actor actor) : StepDefinitionBa
         var outcome = await Actor.AsksForAsync(new TheOutcome());
         await Assert.That(outcome.Status).IsEqualTo(403)
             .Because($"expected HTTP 403 Forbidden, but received {outcome.Status}: {outcome.Body}");
-        await Assert.That(outcome.ErrorMessage).Contains("Only the reservation owner can perform this action.")
-            .Because("backend should forbid non-owner access to group sessions");
+        await Assert.That(outcome.ErrorMessage).Contains("Only the reservation owner")
+            .Because("backend should forbid non-owner access to group sessions or pre-orders");
     }
 
     [Then("the request is refused as unauthorized")]

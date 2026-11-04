@@ -3,12 +3,14 @@
 - **Task Specification:** [homework-aqa.md](homework-aqa.md)
 - **Chosen Track:** **Track 1: Group Pre-Order** (Testing our own deployed Backend and Frontend)
 - **Target Stack:** .NET 10 (C# 13), Reqnroll (Cucumber/Gherkin BDD), TUnit, Microsoft Playwright for .NET, Screenplay Pattern
-- **Status:** Complete & Verified (**Level 1: Guest Sessions List**)
-- **Quality Gates:** Build: 0 errors, 0 warnings | Discovered Tests: 14 new L1 scenarios (96 total) | Quality Pipeline: Passed
+- **Status:** Complete & Verified (**Level 1: Guest Sessions List** & **Level 2: Owner Session & Consolidated Submit**)
+- **Quality Gates:** Build: 0 errors, 0 warnings | Discovered Tests: 27 new Track 1 scenarios (109 total) | Quality Pipeline: Passed
 
 ---
 
-## 1. Requirements Delivery Matrix (Level 1: Guest Sessions List)
+## 1. Requirements Delivery Matrix
+
+### Level 1: Guest Sessions List
 
 | # | Scenario Description | Layer | Persona | Primary Action / Flow | Expected Outcome & Verifications | Undefined Behavior / Status Code |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -29,10 +31,33 @@
 
 ---
 
+### Level 2: Owner Session & Consolidated Submit
+
+| # | Scenario Description | Layer | Persona | Primary Action / Flow | Expected Outcome & Verifications | Undefined Behavior / Status Code |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **15** | Owner confirms consolidated pre-order with merged identical dishes | **UI** | Owner | Owner clicks `Submit Pre-Order` and confirms modal. | Status badge updates to `Sent to Restaurant`; identical dishes are merged with summed quantities; unconfirmed carts excluded; submit button hidden. | `200` OK snapshot in DOM |
+| **16** | Owner confirms consolidated pre-order via service | **API** | Owner | `POST /group-reservations/{id}/submit` with `{ reservationId }` and owner token. | Returns 200 with list of consolidated dishes and summed quantities; group reservation status transitions to `Submitted`. | `200` OK |
+| **17** | Waiter views confirmed consolidated pre-order | **UI** | Waiter | Waiter navigates to `/waiter-pre-order` for the confirmed reservation. | Displays exact items and consolidated quantities confirmed by Owner. | `200` OK snapshot in DOM |
+| **18** | Waiter retrieves confirmed order details via service | **API** | Waiter | `GET /orders/{reservationId}` with waiter token. | Order status equals `SubmittedByCustomer`; contains exact consolidated dishes and summed quantities. | `200` OK |
+| **19** | Submitting refused when no guest carts confirmed | **API** | Owner | Owner submits pre-order when all guests are still choosing (`isSubmitted: false`). | Rejected by validation check. | `400` Bad Request (`"There are no submitted guest sessions."`) |
+| **20** | Owner cannot submit when no confirmed dishes exist | **UI** | Owner | Owner opens group pre-order where guests haven't submitted any dishes. | `Submit Pre-Order` button is `disabled`. | Disabled submit action in DOM |
+| **21** | Submitting refused when confirmed carts contain no dishes | **API** | Owner | Owner submits pre-order when confirmed guests have empty carts. | Rejected by validation check. | `400` Bad Request (`"Submitted guest sessions contain no dishes."`) |
+| **22** | Duplicate submission of confirmed group pre-order is refused | **API** | Owner | Owner submits an already submitted group pre-order a second time. | Group state guard rejects duplicate submission. | `400` Bad Request (`"Group reservation was submitted."`) |
+| **23** | Submitting for non-existent group returns 404 | **API** | Owner | `POST /group-reservations/{nonExistentId}/submit`. | Group lookup fails. | `404` Not Found |
+| **24** | Submitting with mismatched reservation ID is refused | **API** | Owner | `POST /group-reservations/{id}/submit` with non-matching `reservationId`. | Mismatch validation rejects request. | `400` Bad Request |
+| **25** | Non-owner cannot submit consolidated pre-order | **API** | Customer | Another authenticated user calls `POST /group-reservations/{id}/submit`. | Ownership authorization rejects non-owner. | `403` Forbidden (`"Only the reservation owner can submit the consolidated pre-order."`) |
+| **26** | Waiter cannot submit consolidated pre-order | **API** | Waiter | Authenticated waiter calls `POST /group-reservations/{id}/submit`. | Ownership authorization rejects waiter. | `403` Forbidden (`"Only the reservation owner can submit the consolidated pre-order."`) |
+| **27** | Unauthorized visitor cannot submit pre-order | **API** | Visitor | Unauthenticated call to `POST /group-reservations/{id}/submit`. | Authorizer rejects missing token. | `401` Unauthorized |
+
+---
+
 ## 2. Test Pyramid & Architectural Approach
 
 ### Chosen Architecture: BDD + Screenplay Pattern
-- **Gherkin Business Layer (`Features/GroupPreOrder.feature`):** Scenarios written in declarative business language focusing on user goals and observable outcomes, strictly avoiding URLs, HTTP verbs, CSS selectors, or status codes.
+- **Gherkin Business Layer (`Features/`):**
+  - `Features/GroupPreOrder.feature`: Level 1 (Guest Sessions List, 14 scenarios).
+  - `Features/GroupPreOrderConfirmation.feature`: Level 2 (Owner Session & Consolidated Submit, 13 scenarios).
+  Scenarios written in declarative business language focusing on user goals and observable outcomes, strictly avoiding URLs, HTTP verbs, CSS selectors, or status codes.
 - **Screenplay Separation of Concerns:**
   - **Actor:** Represents the persona executing actions (`Owner`, `Guest`, `Customer`, `Waiter`, `Visitor`).
   - **Abilities:**
@@ -44,19 +69,25 @@
     - `AddGuestToGroupPreOrder`: Creates guest session and populates carts via API for fast, deterministic setup.
     - `ModifyGuestCart`: Dynamically adds/removes items from guest carts.
     - `OpenTheGroupPreOrderPage` / `RefreshTheGroupPreOrder`: Controls UI navigation and refresh actions.
-    - `AskForGuestSessions`: Issues API requests under specific user personas.
+    - `SubmitTheConsolidatedPreOrderInUi`: Opens the submit modal on the review page, verifies confirmation prompt, and confirms order submission.
+    - `SubmitTheConsolidatedPreOrderThroughTheApi`: Submits consolidated order under various roles (`Owner`, `AnotherCustomer`, `Waiter`, `Unauthorized`).
+    - `OpenTheWaiterPreOrderPage` / `AskForOrderByReservationId`: Enables waiter to inspect the confirmed order in UI and via API.
   - **Questions (`Screenplay/Questions/`):**
     - `TheGroupOrderParticipants`: Reads participant cards, item lists, and subtotals.
     - `TheGrandTotalShown`: Parses UI grand total.
     - `TheEmptyDishesBannerIsShown` & `TheGroupOrderErrorIsShown`: Validates UI alert and banner states.
-    - `TheGuestSessionsResponse`: Returns typed DTO responses for assertion.
+    - `TheRestaurantOrderSummary`: Inspects consolidated restaurant order summary items and quantities.
+    - `TheConsolidatedDishesResponse`: Returns typed `List<ConsolidatedDishDto>`.
+    - `TheWaiterOrderResponse`: Reads `GetOrderResponse` returned by the orders API.
   - **Page Objects & Components (`Ui/`):**
-    - `GroupOrderPage`: Encapsulates locators for the group pre-order page.
+    - `GroupOrderPage`: Encapsulates locators for the group pre-order page, modal actions, and consolidated order summary.
+    - `WaiterPreOrderPage`: Encapsulates waiter view of the pre-order and dishes list.
     - `ParticipantCardComponent`: Encapsulates participant card elements (`.chip`, `ul.items`, subtotal).
     - `ReservationCardComponent`: Encapsulates reservation card actions (including `Group Pre-order` navigation).
   - **API Clients (`Api/`):**
     - `GuestSessionsApi`: Manages `/guest/sessions/*` and `/guest/groups/*`.
-    - `GroupReservationsApi`: Manages `/reservations/*/invite-token` and `/guest/invites/*`.
+    - `GroupReservationsApi`: Manages `/reservations/*/invite-token`, `/guest/invites/*`, and `/group-reservations/*/submit`.
+    - `OrdersApi`: Manages `/orders/*`.
 
 ---
 
@@ -65,37 +96,45 @@
 Where the homework specification leaves status codes or edge behaviors unspecified, the following deterministic rules are implemented and validated:
 
 1. **Access Control (Non-Owner & Waiter Access):**
-   - **Decision:** HTTP `403 Forbidden` with body `{"error": "Only the reservation owner can perform this action."}`.
-   - **Rationale:** The group pre-order review is private to the reservation owner. Waiters review finalized orders via the waiter dashboard after submission.
-2. **Unauthorized Access (Missing Token):**
+   - **Decision:** HTTP `403 Forbidden` with body `{"error": "Only the reservation owner can submit the consolidated pre-order."}`.
+   - **Rationale:** The group pre-order submission is strictly private to the reservation owner. Waiters review finalized orders via the waiter dashboard after submission.
+2. **Duplicate Submission:**
+   - **Decision:** HTTP `400 Bad Request` with body `{"error": "Group reservation was submitted."}`.
+   - **Rationale:** Once a group pre-order is submitted, the status transitions to `Submitted` and further modifications or duplicate submissions are rejected.
+3. **Submission With No Submitted Guest Carts:**
+   - **Decision:** HTTP `400 Bad Request` with message `"There are no submitted guest sessions."`. In the UI, the submit button is `disabled`.
+4. **Unauthorized Access (Missing Token):**
    - **Decision:** HTTP `401 Unauthorized` for API; automated redirect to `/login` via Angular `AuthGuard` for UI.
-3. **Non-Existent Group Reservation:**
+5. **Non-Existent Group Reservation:**
    - **Decision:** HTTP `404 Not Found` for API; UI renders `.error-container.not-found` with text `"Group reservation not found"`.
-4. **Empty Group Pre-Order (No Guests Joined Yet):**
+6. **Empty Group Pre-Order (No Guests Joined Yet):**
    - **Decision:** API returns 0 guest participants and `total: 0`. UI displays `.empty-dishes-banner` with `"Participants haven’t added any dishes yet"` and grand total `$0.00`.
 
 ---
 
 ## 4. Test Execution & Tagging Strategy
 
-All Level 1 scenarios are tagged with `@level-1` and `@group-preorder`, allowing targeted execution:
+All scenarios are strictly tagged, allowing targeted execution by level or feature:
 
 ### Commands to Run:
 ```bash
 # 1. Build framework
 dotnet build
 
-# 2. Run only Level 1 Group Pre-Order tests
+# 2. Run only Level 1 Group Pre-Order tests (14 scenarios)
 dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-1]"
 
-# 3. Run all Group Pre-Order tests (Levels 1-3)
+# 3. Run only Level 2 Consolidated Confirmation tests (13 scenarios)
+dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-2]"
+
+# 4. Run all Group Pre-Order tests (Levels 1 & 2 - 27 scenarios)
 dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=group-preorder]"
 
-# 4. Run entire suite with TRX report
+# 5. Run entire suite with TRX report
 dotnet run --no-build -- --report-trx
 
-# 5. Run UI tests with headed browser
-HEADED=true dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-1]"
+# 6. Run UI tests with headed browser
+HEADED=true dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-2]"
 ```
 
 ### Artifacts and Reports:
@@ -105,20 +144,9 @@ HEADED=true dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-
 
 ---
 
-## 5. Environment & CI Configuration Clarification
-
-### `AQA_ADMIN_USERNAME` vs `ADMIN_USERNAME` Resolution
-- **Investigation:** In the base suite, 5 tests were skipped: 4 from `Reservations.feature` (`@wip`), and 1 from `Reports.feature` (`@requires-admin`).
-- **Resolution:**
-  1. `Settings.cs` was enhanced with automatic fallback between raw keys (`ADMIN_USERNAME`, `WAITER_USERNAME`, etc.) and `AQA_` prefixed keys (`AQA_ADMIN_USERNAME`, `AQA_WAITER_USERNAME`), preventing configuration mismatches between `.env` and environment variables.
-  2. In `.github/workflows/aqa-tests.yml`, credential injection was updated to `${{ secrets.AQA_ADMIN_USERNAME || vars.AQA_ADMIN_USERNAME }}` to seamlessly support credentials stored in either GitHub Secrets or GitHub Variables.
-
----
-
-## 6. Verification & Quality Gates
+## 5. Verification & Quality Gates
 
 1. **Compilation Gate:** Solution compiles with **0 warnings, 0 errors** under .NET 10 (`TreatWarningsAsErrors: true`).
 2. **In-Process Feature Code Generation:** Configured `<ReqnrollGenerationTaskFactory>AssemblyTaskFactory</ReqnrollGenerationTaskFactory>` in `.csproj` to ensure deterministic, in-process code-behind generation without task host spawning failures.
 3. **No Tracked Junk:** All generated code-behind (`*.feature.cs`) and build artifacts are strictly excluded by `.gitignore`.
-4. **Test Discovery:** 96 total tests discovered (82 baseline + 14 new Level 1 scenarios).
-
+4. **Test Discovery:** 109 total tests discovered (82 baseline + 14 Level 1 + 13 Level 2).
