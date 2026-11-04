@@ -1,4 +1,6 @@
+using Restaurant_Aqa_Framework.Api;
 using Restaurant_Aqa_Framework.Api.Dtos.Reservations;
+using Restaurant_Aqa_Framework.Api.Seeding;
 using Restaurant_Aqa_Framework.Contexts;
 using Restaurant_Aqa_Framework.Ui;
 
@@ -17,6 +19,18 @@ public sealed class OpenTheGroupPreOrderPage(string? reservationId = null) : ITa
                 resId = res.Id;
             else
                 throw new InvalidOperationException("No reservation found in actor memory to open the group pre-order page.");
+        }
+
+        // If not already signed in, ensure the browser session has an authenticated customer so AuthGuard allows navigation
+        if (!actor.TryRecall<GroupReservationContext>(out _))
+        {
+            var authApi = new AuthApi(actor.UsingTheApi());
+            var user = SampleDataFactory.RegisterRequest();
+            var regRes = await authApi.RegisterAsync(user);
+            if (regRes.Ok)
+            {
+                await actor.AttemptsToAsync(new SignInThroughTheLoginForm(user.Email, user.Password));
+            }
         }
 
         var page = actor.LookingAtThePage();

@@ -34,9 +34,10 @@ Feature: Group pre-order guest sessions list
       Given an owner has booked a table for a group
       And the following guests have joined the group pre-order:
         | name   | dishes          | status    |
-        | Bob    | Salmon Steak x1 | submitted |
+        | Bob    | Salmon Steak x1 | choosing  |
       And the owner is viewing the group pre-order
       When the guest modifies their cart by adding another dish
+      And the guest confirms their cart
       And the owner refreshes the group pre-order
       Then the grand total updates to reflect the new participant sum
 
@@ -119,11 +120,13 @@ Feature: Group pre-order guest sessions list
 
     @api @negative @level-1
     Scenario: Asking for a non-existent group pre-order returns not found
+      Given an owner has booked a table for a group
       When the owner asks for a non-existent group's pre-order sessions
       Then the group is not found
 
     @ui @negative @level-1
     Scenario: Opening a non-existent group pre-order shows a not found message
+      Given an owner has booked a table for a group
       When the owner opens a non-existent group pre-order page
       Then the group reservation not found message is shown
 

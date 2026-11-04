@@ -50,7 +50,20 @@ public sealed class AskForGuestSessions(string? groupReservationId = null, strin
         else
         {
             if (actor.TryRecall<GroupReservationContext>(out var context))
+            {
                 bearerToken = context.OwnerBearerToken;
+            }
+            else
+            {
+                var user = SampleDataFactory.RegisterRequest();
+                await authApi.RegisterAsync(user);
+                var signInRes = await authApi.SignInAsync(new SignInRequest(user.Email, user.Password));
+                if (signInRes.Ok)
+                {
+                    var tokens = await signInRes.ReadAsAsync<SignInResponse>();
+                    bearerToken = tokens.IdToken;
+                }
+            }
         }
 
         var response = await guestSessionsApi.GetGuestSessionsAsync(groupId, bearerToken);

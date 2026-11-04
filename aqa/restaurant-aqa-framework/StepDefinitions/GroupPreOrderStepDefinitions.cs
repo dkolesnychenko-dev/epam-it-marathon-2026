@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.Playwright;
+using Restaurant_Aqa_Framework.Api;
 using Restaurant_Aqa_Framework.Contexts;
 using Restaurant_Aqa_Framework.Screenplay;
 using Restaurant_Aqa_Framework.Screenplay.Questions;
@@ -64,6 +65,22 @@ public sealed class GroupPreOrderStepDefinitions(Actor actor) : StepDefinitionBa
     public Task WhenGuestAddsDishToCart() =>
         Actor.AttemptsToAsync(new ModifyGuestCart("Bob", "Caesar Salad", 1, add: true));
 
+    [When("the guest confirms their cart")]
+    [When("the guest submits their cart")]
+    public async Task WhenGuestConfirmsTheirCart()
+    {
+        var context = Recall<GroupReservationContext>();
+        var guest = context.Guests.LastOrDefault()
+            ?? throw new InvalidOperationException("No guest found to confirm cart.");
+
+        var guestSessionsApi = new GuestSessionsApi(Actor.UsingTheApi());
+        var res = await guestSessionsApi.SubmitCartAsync(guest.SessionId, guest.SessionToken);
+        if (!res.Ok)
+            throw new InvalidOperationException($"Submitting cart for guest '{guest.GuestName}' failed ({res.Status}): {await res.TextAsync()}");
+
+        guest.IsSubmitted = true;
+    }
+
     [When("the owner refreshes the group pre-order")]
     public Task WhenOwnerRefreshesTheGroupPreOrder() =>
         Actor.AttemptsToAsync(new RefreshTheGroupPreOrder());
@@ -85,6 +102,8 @@ public sealed class GroupPreOrderStepDefinitions(Actor actor) : StepDefinitionBa
     {
         var context = Recall<GroupReservationContext>();
         var page = Actor.LookingAtThePage();
+        await page.Context.ClearCookiesAsync();
+        await page.EvaluateAsync("() => { try { localStorage.clear(); sessionStorage.clear(); } catch {} }");
         await new GroupOrderPage(page).NavigateAsync(context.Reservation.Id);
     }
 
@@ -142,9 +161,10 @@ public sealed class GroupPreOrderStepDefinitions(Actor actor) : StepDefinitionBa
     [Then("the grand total updates to reflect the new participant sum")]
     public async Task ThenGrandTotalUpdatesToReflectNewParticipantSum()
     {
-        var participants = await Actor.AsksForAsync(new TheGroupOrderParticipants());
-        var grandTotal = await Actor.AsksForAsync(new TheGrandTotalShown());
+        var page = Actor.LookingAtThePage();
+        var groupOrderPage = new GroupOrderPage(page);
 
+        var participants = await Actor.AsksForAsync(new TheGroupOrderParticipants());
         decimal sum = 0m;
         foreach (var p in participants)
         {
@@ -155,6 +175,12 @@ public sealed class GroupPreOrderStepDefinitions(Actor actor) : StepDefinitionBa
             }
         }
 
+        if (sum > 0m)
+        {
+            await Assertions.Expect(groupOrderPage.GrandTotal).ToContainTextAsync(sum.ToString("F2", CultureInfo.InvariantCulture), new() { Timeout = 7000 });
+        }
+
+        var grandTotal = await Actor.AsksForAsync(new TheGrandTotalShown());
         await Assert.That(grandTotal).IsEqualTo(sum)
             .Because($"dynamically updated grand total ({grandTotal}) must equal new sum of subtotals ({sum})");
     }
@@ -231,6 +257,14 @@ public sealed class GroupPreOrderStepDefinitions(Actor actor) : StepDefinitionBa
         await Assert.That(participant).IsNotNull();
         await Assert.That(participant!.Items.Count).IsEqualTo(0);
         await Assert.That(participant.Total).IsEqualTo(0m);
+    }
+
+    [Then("the owner sees no participant cards")]
+    public async Task ThenOwnerSeesNoParticipantCards()
+    {
+        var page = Actor.LookingAtThePage();
+        var groupOrderPage = new GroupOrderPage(page);
+        await Assertions.Expect(groupOrderPage.Participants).ToHaveCountAsync(0);
     }
 
     [Then("the owner sees the empty pre-order banner")]

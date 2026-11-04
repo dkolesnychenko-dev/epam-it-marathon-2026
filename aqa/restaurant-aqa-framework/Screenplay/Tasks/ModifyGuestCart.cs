@@ -23,18 +23,49 @@ public sealed class ModifyGuestCart(string guestName, string dishName, int quant
 
         if (!actor.TryRecall<DishResponse>(dishName, out var dish))
         {
-            var request = SampleDataFactory.CreateDishRequest([location.Id]);
-            var price = dishName.Contains("Salmon", StringComparison.OrdinalIgnoreCase) ? 25.00m : 15.00m;
-            var customRequest = request with { Name = SampleDataFactory.Prefix + dishName, Price = price };
-            var createRes = await dishesApi.CreateDishAsync(customRequest);
-            if (!createRes.Ok)
-                throw new InvalidOperationException($"Creating dish '{dishName}' failed: {await createRes.TextAsync()}");
+            // 1. Check existing dishes already attached to this location's menu (must be Available)
+            try
+            {
+                var locationsApi = new LocationsApi(apiContext);
+                var locDishesRes = await locationsApi.GetDishesForLocationAsync(location.Id);
+                if (locDishesRes.Ok)
+                {
+                    var dishes = await locDishesRes.ReadAsAsync<List<DishResponse>>();
+                    var availableDishes = dishes?.Where(d => d.State.Equals("Available", StringComparison.OrdinalIgnoreCase)).ToList();
+                    if (availableDishes is { Count: > 0 })
+                    {
+                        var matched = availableDishes.FirstOrDefault(d => d.Name.Equals(dishName, StringComparison.OrdinalIgnoreCase))
+                            ?? availableDishes.FirstOrDefault(d => d.Name.Contains(dishName, StringComparison.OrdinalIgnoreCase) || dishName.Contains(d.Name, StringComparison.OrdinalIgnoreCase))
+                            ?? (dishName.Contains("Salmon", StringComparison.OrdinalIgnoreCase) ? availableDishes.FirstOrDefault(d => d.Name.Contains("Salmon", StringComparison.OrdinalIgnoreCase)) : null)
+                            ?? (dishName.Contains("Salad", StringComparison.OrdinalIgnoreCase) ? availableDishes.FirstOrDefault(d => d.Name.Contains("Salad", StringComparison.OrdinalIgnoreCase)) : null)
+                            ?? availableDishes.First();
 
-            dish = await createRes.ReadAsAsync<DishResponse>();
-            actor.Remember(dishName, dish);
+                        if (matched != null)
+                        {
+                            dish = matched;
+                            actor.Remember(dishName, dish);
+                        }
+                    }
+                }
+            }
+            catch { }
 
-            var waiter = await actor.AsksForAsync(new TheWaiterSession());
-            cleanup.TrackDelete($"dish:{dish.Id}", () => dishesApi.DeleteDishAsync(dish.Id, force: true, bearerToken: waiter.IdToken));
+            // 2. If not found in location's menu, create a new dish
+            if (dish == null)
+            {
+                var request = SampleDataFactory.CreateDishRequest([location.Id]);
+                var price = dishName.Contains("Salmon", StringComparison.OrdinalIgnoreCase) ? 26.00m : 14.00m;
+                var customRequest = request with { Name = SampleDataFactory.Prefix + dishName, Price = price, State = DishState.Available };
+                var waiter = await actor.AsksForAsync(new TheWaiterSession());
+                var createRes = await dishesApi.CreateDishAsync(customRequest, waiter.IdToken);
+                if (!createRes.Ok)
+                    throw new InvalidOperationException($"Creating dish '{dishName}' failed: {await createRes.TextAsync()}");
+
+                dish = await createRes.ReadAsAsync<DishResponse>();
+                actor.Remember(dishName, dish);
+
+                cleanup.TrackDelete($"dish:{dish.Id}", () => dishesApi.DeleteDishAsync(dish.Id, force: true, bearerToken: waiter.IdToken));
+            }
         }
 
         if (add)

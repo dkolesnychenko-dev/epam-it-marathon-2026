@@ -14,11 +14,11 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **1** | Owner views participants, dishes, quantities, and individual totals | **UI** | Owner | Owner opens `/reservations/:id/group-order` after guests joined and selected dishes. | All participants (Owner + Guests) rendered in `ul.participants-list`; each dish name, quantity (`× N`), and price itemized; individual subtotals rendered. Grand total equals sum of subtotals. | `200` OK snapshot in DOM |
 | **2** | Owner retrieves sessions list via API | **API** | Owner | `GET /guest/groups/{groupId}/sessions` with Owner JWT token. | Response contains all participants with `items`, individual `total`s, and grand `total`. | `200` OK |
-| **3** | Grand total dynamically updates on cart modification | **UI** | Owner, Guest | Guest adds a dish to their cart; Owner clicks `Refresh` on group pre-order page. | Grand total in `footer.footer-summary` updates dynamically and matches the newly recalculated sum of all subtotals. | Live client-side state sync |
+| **3** | Grand total dynamically updates on cart modification | **UI** | Owner, Guest | Guest adds a dish to their cart and confirms; Owner clicks `Refresh` on group pre-order page. | Grand total in `footer.footer-summary` updates dynamically and matches the newly recalculated sum of all subtotals. | Live client-side state sync |
 | **4** | Service recalculates totals when guest adds dishes | **API** | Owner, Guest | Guest calls `POST /guest/sessions/{id}/dishes`; Owner calls `GET /guest/groups/{groupId}/sessions`. | Grand `total` equals the sum of updated participant subtotals. | `200` OK |
 | **5** | Unconfirmed carts show choosing status, empty carts show empty indicator | **UI** | Owner | Owner opens group pre-order with unsubmitted and empty guest carts. | Unsubmitted guest displays `.chip.pending` (`Still choosing`); participant with no dishes displays `p.empty` (`No dishes yet`) and subtotal `$0.00`. | DOM indicator checks |
 | **6** | Unsubmitted carts and empty dishes returned in sessions response | **API** | Owner | Owner calls `GET /guest/groups/{groupId}/sessions`. | Unconfirmed guest has `isSubmitted: false`; empty guest has `items: []` and `total: 0`. | `200` OK |
-| **7** | Owner opens empty group pre-order | **UI** | Owner | Owner books group table with no guests joined; opens group pre-order page. | Displays `.empty-dishes-banner` (`Participants haven’t added any dishes yet`); grand total displays `$0.00`. | Specified empty view |
+| **7** | Owner opens empty group pre-order | **UI** | Owner | Owner books group table with no guests joined; opens group pre-order page. | Displays empty pre-order banner (`Participants haven’t added any dishes yet`); grand total displays `$0.00`. | Specified empty view (`participants: []`, `total: 0`) |
 | **8** | Service returns empty participants and zero total for empty group | **API** | Owner | `GET /guest/groups/{groupId}/sessions` on group with 0 guests. | 0 guest participants; `total: 0`. | `200` OK, `total: 0` |
 | **9** | Another customer cannot view group sessions | **API** | Customer | Authenticated customer (not owner) calls `GET /guest/groups/{groupId}/sessions`. | Blocked by tenant isolation check. | `403` Forbidden (`"Only the reservation owner can perform this action."`) |
 | **10** | Waiter cannot view customer's group pre-order sessions | **API** | Waiter | Authenticated waiter calls `GET /guest/groups/{groupId}/sessions`. | Blocked by ownership validation. | `403` Forbidden (`"Only the reservation owner can perform this action."`) |
@@ -40,7 +40,7 @@
     - `CallTheApi`: Performs direct HTTP requests using `IAPIRequestContext` (available to both API and UI actors).
     - `IRemember`: Manages isolated per-scenario state in Reqnroll's typed `ScenarioContext`.
   - **Tasks (`Screenplay/Tasks/`):**
-    - `SetUpGroupReservation`: Creates location, table, registers/authenticates owner, books group table, retrieves invite token.
+    - `SetUpGroupReservation`: Resolves a valid restaurant branch with an assigned waiter (via standing waiter mapping or seeded branch), provisions an isolated table, registers and authenticates the owner, creates the group reservation, and retrieves the group invite token.
     - `AddGuestToGroupPreOrder`: Creates guest session and populates carts via API for fast, deterministic setup.
     - `ModifyGuestCart`: Dynamically adds/removes items from guest carts.
     - `OpenTheGroupPreOrderPage` / `RefreshTheGroupPreOrder`: Controls UI navigation and refresh actions.
