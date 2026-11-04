@@ -19,7 +19,7 @@ permissions:
 
 env:
   TF_DIR: infra/terraform
-  AWS_REGION: us-west-2
+  AWS_REGION: eu-north-1
   TF_VERSION: '1.10.5'
   TF_VAR_alert_emails: ${{ vars.ALERT_EMAILS }}
 
