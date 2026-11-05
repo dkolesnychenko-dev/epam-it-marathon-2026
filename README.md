@@ -37,8 +37,9 @@ As part of the marathon track, all workshops and webinars were completed, follow
 - **Materials:** [`howeworks/qa/`](howeworks/qa/) | **Test Cases & Defects:** [`homework-qa.xlsx`](howeworks/qa/homework-qa.xlsx)
 - **Summary:** Conducted requirements analysis for US11 (guest reservation flow), identifying and resolving specification gaps regarding unavailable item statuses (On Stop / Out of Stock). Designed 10 comprehensive test cases, executed manual test suites, and logged defect reports.
 
-### 7. 🤖 Automated Testing
-> *Placeholder — automated testing scenarios and verification suites (E2E / Integration tests) will be added here upon completion.*
+### 7. 🤖 Automated Testing (AQA)
+- **Materials:** [`howeworks/aqa/homework-aqa-report.md`](howeworks/aqa/homework-aqa-report.md) | **Test Suite:** [`aqa/restaurant-aqa-framework/`](aqa/restaurant-aqa-framework/)
+- **Summary:** Automated end-to-end (E2E) and integration testing for **Track 1: Group Pre-Order** using **.NET 10 (C# 13)**, **Reqnroll** (Cucumber/Gherkin BDD), **TUnit**, **Microsoft Playwright for .NET**, and the **Screenplay Pattern**. Fully covered and verified all 3 levels (Levels 1–3: guest sessions list, consolidated submission with dish aggregation, and guest removal with recalculation) across 39 scenarios (UI and API layers) with a 100% pass rate (39/39) and 0 compiler warnings (`TreatWarningsAsErrors`).
 
 ---
 
@@ -48,7 +49,7 @@ As part of the marathon track, all workshops and webinars were completed, follow
 - **Frontend:** Angular 22, TypeScript, RxJS, SCSS
 - **Cloud & IaC:** AWS (API Gateway, S3, CloudFront, Budgets), Terraform, AWS Syndicate
 - **AI & Tools:** Google Antigravity IDE (Agentic Framework & Skills), Figma & AI Make
-- **Testing:** xUnit, Moq, Manual QA (Test Cases & Defect Tracking)
+- **Testing:** Reqnroll (Cucumber/Gherkin BDD), TUnit, Playwright for .NET, Screenplay Pattern, xUnit, Moq, Manual QA (Test Cases & Defect Tracking)
 
 ---
 
@@ -63,10 +64,11 @@ _The certificate will be uploaded here once the marathon results are officially 
 
 ```text
 epam-it-marathon-2026/
+├── aqa/           # E2E & API test automation framework (Playwright, Reqnroll, TUnit)
 ├── backend/       # AWS Lambda microservices (.NET 10) & DynamoDB/Cognito seed scripts
 ├── frontend/      # Client web application (Angular 22)
 ├── infra/         # Infrastructure as Code manifests (Terraform)
-├── howeworks/     # Stage reports and deliverables (BA, UI/UX, DevOps, Backend, Frontend, QA)
+├── howeworks/     # Stage reports and deliverables (BA, UI/UX, DevOps, Backend, Frontend, QA, AQA)
 └── docs/          # Product documentation and screenshots
 ```
 
