@@ -19,6 +19,9 @@ public sealed class GroupOrderPage(IPage page) : BasePage(page)
     public ILocator SubmitModal => Page.Locator(".modal-card[role='dialog'], dialog, .modal-dialog").Filter(new() { HasText = "Submit Pre-Order" });
     public ILocator ConfirmSubmitButton => Page.Locator("button.confirm-btn");
     public ILocator CancelSubmitButton => Page.Locator("button.cancel-btn");
+    public ILocator RemoveGuestModal => Page.Locator(".modal-card[role='dialog'], dialog, .modal-dialog").Filter(new() { HasText = "Remove Guest" });
+    public ILocator ConfirmRemoveGuestButton => Page.Locator("button.remove-btn");
+    public ILocator CancelRemoveGuestButton => Page.Locator("button.cancel-btn");
     public ILocator ConsolidatedSummary => Page.Locator("section.consolidated-section");
     public ILocator ConsolidatedItems => Page.Locator("section.consolidated-section ul.consolidated-list > li.consolidated-item");
 
@@ -52,6 +55,9 @@ public sealed class GroupOrderPage(IPage page) : BasePage(page)
     public async Task OpenSubmitModalAsync() => await SubmitButton.ClickAsync();
     public async Task ConfirmSubmitAsync() => await ConfirmSubmitButton.ClickAsync();
     public async Task CancelSubmitAsync() => await CancelSubmitButton.ClickAsync();
+
+    public async Task ConfirmRemoveGuestAsync() => await ConfirmRemoveGuestButton.ClickAsync();
+    public async Task CancelRemoveGuestAsync() => await CancelRemoveGuestButton.ClickAsync();
 
     public async Task<IReadOnlyList<(string DishName, int Quantity, string TotalPrice)>> GetConsolidatedItemsAsync()
     {

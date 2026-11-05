@@ -3,8 +3,8 @@
 - **Task Specification:** [homework-aqa.md](homework-aqa.md)
 - **Chosen Track:** **Track 1: Group Pre-Order** (Testing our own deployed Backend and Frontend)
 - **Target Stack:** .NET 10 (C# 13), Reqnroll (Cucumber/Gherkin BDD), TUnit, Microsoft Playwright for .NET, Screenplay Pattern
-- **Status:** Complete & Verified (**Level 1: Guest Sessions List** & **Level 2: Owner Session & Consolidated Submit**)
-- **Quality Gates:** Build: 0 errors, 0 warnings | Discovered Tests: 27 new Track 1 scenarios (109 total) | Quality Pipeline: Passed
+- **Status:** Complete & Verified (**Level 1: Guest Sessions List**, **Level 2: Owner Session & Consolidated Submit**, **Level 3: Guest Session Removal**)
+- **Quality Gates:** Build: 0 errors, 0 warnings | Discovered Tests: 39 new Track 1 scenarios (121 total) | Quality Pipeline: 100% Passed (39/39)
 
 ---
 
@@ -51,12 +51,32 @@
 
 ---
 
+### Level 3: Guest Session Removal
+
+| # | Scenario Description | Layer | Persona | Primary Action / Flow | Expected Outcome & Verifications | Undefined Behavior / Status Code |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **28** | Owner removes a participant in the UI | **UI** | Owner | Owner clicks `Remove Guest` on participant card and confirms removal dialog. | Target participant is removed from participant list; remaining participants stay intact; grand total is immediately recalculated to match remaining participants. | `200` OK snapshot in DOM |
+| **29** | Owner removes a participant via the service | **API** | Owner | `DELETE /guest/groups/{groupId}/sessions/{sessionId}` with owner token. | Returns 200 with updated participant list excluding the removed guest and recalculated total. | `200` OK |
+| **30** | Owner removes a participant who already confirmed their cart | **API** | Owner | Owner removes a guest who has `isSubmitted: true`. | Service allows removal; returned participant list excludes the guest and total excludes their dishes. | `200` OK |
+| **31** | Owner removes the last remaining participant in the UI | **UI** | Owner | Group has 1 guest; owner removes the guest in UI. | 0 guest participants remain; empty pre-order banner (`Participants haven’t added any dishes yet`) is displayed; grand total is `$0.00`. | DOM empty state |
+| **32** | Owner removes the last remaining participant via the service | **API** | Owner | Group has 1 guest; owner deletes the session via API. | Returns 200; participants list contains only owner session (0 guests); grand total is `0`. | `200` OK |
+| **33** | Removing a participant belonging to another group is refused | **API** | Owner | Owner attempts to delete guest session ID from an independent second group (`DELETE /guest/groups/{g1}/sessions/{s2}`). | Session group mismatch validation rejects request. | `400` Bad Request (`"Guest session does not belong to this group reservation."`) |
+| **34** | Removing a non-existent participant returns not found | **API** | Owner | `DELETE /guest/groups/{groupId}/sessions/{nonExistentSessionId}`. | Session lookup fails. | `404` Not Found (`"Guest session with id ... not found."`) |
+| **35** | Removing the owner session is refused | **API** | Owner | Owner attempts to delete their own session (`DELETE /guest/groups/{groupId}/sessions/{ownerSessionId}`). | Owner session protection rejects deletion. | `400` Bad Request (`"Cannot remove the owner session from the group order."`) |
+| **36** | Another customer cannot remove a participant | **API** | Customer | Another authenticated user calls `DELETE /guest/groups/{groupId}/sessions/{sessionId}`. | Ownership authorization rejects non-owner. | `403` Forbidden (`"Only the reservation owner can perform this action."`) |
+| **37** | Waiter cannot remove a participant | **API** | Waiter | Authenticated waiter calls `DELETE /guest/groups/{groupId}/sessions/{sessionId}`. | Ownership authorization rejects waiter. | `403` Forbidden (`"Only the reservation owner can perform this action."`) |
+| **38** | Unauthorized visitor cannot remove a participant | **API** | Visitor | Unauthenticated call to `DELETE /guest/groups/{groupId}/sessions/{sessionId}`. | Authorizer rejects missing token. | `401` Unauthorized |
+| **39** | End-to-End flow: Add dishes → Owner removes one guest → Submits → Waiter sees confirmed order without removed guest | **E2E (UI + API)** | Owner, Guests, Waiter | Multiple guests add dishes; Owner reviews list and removes guest; Owner confirms pre-order; Waiter reviews order. | Waiter sees confirmed order containing only dishes and quantities from the non-removed guest. | `200` OK end-to-end flow |
+
+---
+
 ## 2. Test Pyramid & Architectural Approach
 
 ### Chosen Architecture: BDD + Screenplay Pattern
 - **Gherkin Business Layer (`Features/`):**
   - `Features/GroupPreOrder.feature`: Level 1 (Guest Sessions List, 14 scenarios).
   - `Features/GroupPreOrderConfirmation.feature`: Level 2 (Owner Session & Consolidated Submit, 13 scenarios).
+  - `Features/GroupPreOrderGuestRemoval.feature`: Level 3 (Guest Session Removal, 12 scenarios).
   Scenarios written in declarative business language focusing on user goals and observable outcomes, strictly avoiding URLs, HTTP verbs, CSS selectors, or status codes.
 - **Screenplay Separation of Concerns:**
   - **Actor:** Represents the persona executing actions (`Owner`, `Guest`, `Customer`, `Waiter`, `Visitor`).
@@ -66,11 +86,14 @@
     - `IRemember`: Manages isolated per-scenario state in Reqnroll's typed `ScenarioContext`.
   - **Tasks (`Screenplay/Tasks/`):**
     - `SetUpGroupReservation`: Resolves a valid restaurant branch with an assigned waiter (via standing waiter mapping or seeded branch), provisions an isolated table, registers and authenticates the owner, creates the group reservation, and retrieves the group invite token.
+    - `SetUpAnotherGroupReservation`: Sets up an independent second group with its own owner, table, reservation, and guests for cross-group isolation testing while preserving the primary group context.
     - `AddGuestToGroupPreOrder`: Creates guest session and populates carts via API for fast, deterministic setup.
     - `ModifyGuestCart`: Dynamically adds/removes items from guest carts.
     - `OpenTheGroupPreOrderPage` / `RefreshTheGroupPreOrder`: Controls UI navigation and refresh actions.
     - `SubmitTheConsolidatedPreOrderInUi`: Opens the submit modal on the review page, verifies confirmation prompt, and confirms order submission.
     - `SubmitTheConsolidatedPreOrderThroughTheApi`: Submits consolidated order under various roles (`Owner`, `AnotherCustomer`, `Waiter`, `Unauthorized`).
+    - `RemoveGuestFromGroupInUi`: Clicks `Remove Guest` button on the participant card, confirms modal dialog, and waits for DOM detachment.
+    - `RemoveGuestThroughTheApi`: Calls `DELETE /guest/groups/{groupId}/sessions/{sessionId}` under specific roles or with explicit IDs.
     - `OpenTheWaiterPreOrderPage` / `AskForOrderByReservationId`: Enables waiter to inspect the confirmed order in UI and via API.
   - **Questions (`Screenplay/Questions/`):**
     - `TheGroupOrderParticipants`: Reads participant cards, item lists, and subtotals.
@@ -79,13 +102,14 @@
     - `TheRestaurantOrderSummary`: Inspects consolidated restaurant order summary items and quantities.
     - `TheConsolidatedDishesResponse`: Returns typed `List<ConsolidatedDishDto>`.
     - `TheWaiterOrderResponse`: Reads `GetOrderResponse` returned by the orders API.
+    - `TheGuestSessionsResponse`: Returns typed `GetAllSessionsResponse` from the API.
   - **Page Objects & Components (`Ui/`):**
-    - `GroupOrderPage`: Encapsulates locators for the group pre-order page, modal actions, and consolidated order summary.
+    - `GroupOrderPage`: Encapsulates locators for the group pre-order page, submit and remove modals, and consolidated order summary.
     - `WaiterPreOrderPage`: Encapsulates waiter view of the pre-order and dishes list.
-    - `ParticipantCardComponent`: Encapsulates participant card elements (`.chip`, `ul.items`, subtotal).
+    - `ParticipantCardComponent`: Encapsulates participant card elements (`.chip`, `ul.items`, subtotal, remove guest button).
     - `ReservationCardComponent`: Encapsulates reservation card actions (including `Group Pre-order` navigation).
   - **API Clients (`Api/`):**
-    - `GuestSessionsApi`: Manages `/guest/sessions/*` and `/guest/groups/*`.
+    - `GuestSessionsApi`: Manages `/guest/sessions/*` and `/guest/groups/*` (including `DeleteGuestSessionAsync`).
     - `GroupReservationsApi`: Manages `/reservations/*/invite-token`, `/guest/invites/*`, and `/group-reservations/*/submit`.
     - `OrdersApi`: Manages `/orders/*`.
 
@@ -96,18 +120,24 @@
 Where the homework specification leaves status codes or edge behaviors unspecified, the following deterministic rules are implemented and validated:
 
 1. **Access Control (Non-Owner & Waiter Access):**
-   - **Decision:** HTTP `403 Forbidden` with body `{"error": "Only the reservation owner can submit the consolidated pre-order."}`.
-   - **Rationale:** The group pre-order submission is strictly private to the reservation owner. Waiters review finalized orders via the waiter dashboard after submission.
-2. **Duplicate Submission:**
+   - **Decision:** HTTP `403 Forbidden` with body `{"error": "Only the reservation owner can perform this action."}` for sessions view and participant removal; `{"error": "Only the reservation owner can submit the consolidated pre-order."}` for order submission.
+   - **Rationale:** Group pre-order management is strictly private to the reservation owner. Waiters review finalized orders via the waiter dashboard after submission.
+2. **Cross-Group Removal (Mismatched Participant):**
+   - **Decision:** HTTP `400 Bad Request` with message `"Guest session does not belong to this group reservation."`.
+   - **Rationale:** Prevents tenant cross-contamination between different group pre-orders.
+3. **Owner Session Deletion:**
+   - **Decision:** HTTP `400 Bad Request` with message `"Cannot remove the owner session from the group order."`.
+   - **Rationale:** The group reservation owner is the anchor of the order and cannot remove themselves.
+4. **Duplicate Submission:**
    - **Decision:** HTTP `400 Bad Request` with body `{"error": "Group reservation was submitted."}`.
    - **Rationale:** Once a group pre-order is submitted, the status transitions to `Submitted` and further modifications or duplicate submissions are rejected.
-3. **Submission With No Submitted Guest Carts:**
+5. **Submission With No Submitted Guest Carts:**
    - **Decision:** HTTP `400 Bad Request` with message `"There are no submitted guest sessions."`. In the UI, the submit button is `disabled`.
-4. **Unauthorized Access (Missing Token):**
+6. **Unauthorized Access (Missing Token):**
    - **Decision:** HTTP `401 Unauthorized` for API; automated redirect to `/login` via Angular `AuthGuard` for UI.
-5. **Non-Existent Group Reservation:**
+7. **Non-Existent Group Reservation / Guest Session:**
    - **Decision:** HTTP `404 Not Found` for API; UI renders `.error-container.not-found` with text `"Group reservation not found"`.
-6. **Empty Group Pre-Order (No Guests Joined Yet):**
+8. **Empty Group Pre-Order (No Guests Joined Yet / Last Guest Removed):**
    - **Decision:** API returns 0 guest participants and `total: 0`. UI displays `.empty-dishes-banner` with `"Participants haven’t added any dishes yet"` and grand total `$0.00`.
 
 ---
@@ -118,23 +148,26 @@ All scenarios are strictly tagged, allowing targeted execution by level or featu
 
 ### Commands to Run:
 ```bash
-# 1. Build framework
+# 1. Build framework (TreatWarningsAsErrors: true)
 dotnet build
 
-# 2. Run only Level 1 Group Pre-Order tests (14 scenarios)
+# 2. Run Level 1 Group Pre-Order tests (14 scenarios)
 dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-1]"
 
-# 3. Run only Level 2 Consolidated Confirmation tests (13 scenarios)
+# 3. Run Level 2 Consolidated Confirmation tests (13 scenarios)
 dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-2]"
 
-# 4. Run all Group Pre-Order tests (Levels 1 & 2 - 27 scenarios)
+# 4. Run Level 3 Guest Session Removal tests (12 scenarios)
+dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-3]"
+
+# 5. Run entire Track 1 suite (Levels 1, 2, and 3 - 39 scenarios)
 dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=group-preorder]"
 
-# 5. Run entire suite with TRX report
+# 6. Run entire suite with TRX report
 dotnet run --no-build -- --report-trx
 
-# 6. Run UI tests with headed browser
-HEADED=true dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-2]"
+# 7. Run UI tests with headed browser
+HEADED=true dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-3]"
 ```
 
 ### Artifacts and Reports:
@@ -149,4 +182,7 @@ HEADED=true dotnet run --no-build -- --treenode-filter "/*/*/*/*[Category=level-
 1. **Compilation Gate:** Solution compiles with **0 warnings, 0 errors** under .NET 10 (`TreatWarningsAsErrors: true`).
 2. **In-Process Feature Code Generation:** Configured `<ReqnrollGenerationTaskFactory>AssemblyTaskFactory</ReqnrollGenerationTaskFactory>` in `.csproj` to ensure deterministic, in-process code-behind generation without task host spawning failures.
 3. **No Tracked Junk:** All generated code-behind (`*.feature.cs`) and build artifacts are strictly excluded by `.gitignore`.
-4. **Test Discovery:** 109 total tests discovered (82 baseline + 14 Level 1 + 13 Level 2).
+4. **Test Discovery & Execution:**
+   - **Total Track 1 Scenarios:** **39** (14 Level 1 + 13 Level 2 + 12 Level 3).
+   - **Execution Result:** **39 Passed, 0 Failed, 0 Skipped (100% Success)**.
+   - **Total Solution Tests:** **121** tests discovered across the framework.
