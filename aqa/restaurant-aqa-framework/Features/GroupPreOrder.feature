@@ -129,4 +129,3 @@ Feature: Group pre-order guest sessions list
       Given an owner has booked a table for a group
       When the owner opens a non-existent group pre-order page
       Then the group reservation not found message is shown
-

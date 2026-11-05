@@ -133,4 +133,3 @@ Feature: Group pre-order guest session removal
       And the waiter views the pre-order for this reservation
       Then the waiter sees all confirmed items with exact quantities
       And the order does not contain dishes from the removed guest "Dave"
-

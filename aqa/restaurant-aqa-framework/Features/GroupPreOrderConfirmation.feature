@@ -137,4 +137,3 @@ Feature: Group pre-order confirmation and consolidated submit
       Given an owner has booked a table for a group
       When an unauthorized visitor attempts to submit the consolidated pre-order
       Then the request is refused as unauthorized
-
